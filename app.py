@@ -84,40 +84,6 @@ def update_map(click_data_map, dropdown_state, memory_state):
     figure = px.scatter_mapbox(lat=lat, lon=lng, color=category, zoom=11)
     figure.update_layout(mapbox_style="carto-positron")
     return figure
-
-@callback(
-    Output('output-map-1', 'figure', allow_duplicate=True),
-    Input('output-map-1', 'relayoutData'),
-    State('dropdown-component-final', 'value'),
-    State('output-map-1', 'figure'),
-    State('memory-output', 'data'),
-    prevent_initial_call=True
-)
-def update_map(relayoutData, dropdown_state, figure_state, memory_state):
-    if len(relayoutData) == 1:
-        return {}
-            
-    zoom_state = figure_state['layout']['mapbox']['zoom']
-    print(zoom_state)
-    zoom = relayoutData['mapbox.zoom']
-    print(zoom)
-    if zoom < 11:
-        df = pd.read_json(memory_state, orient="split")
-        df = df[df['city'].isin(dropdown_state)]
-        df_totals = get_totals(dropdown_state, memory_state)
-        totals = df_totals['mock_results'].tolist()
-        lat = df.lat
-        lng = df.lng
-        location = df.city
-        figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Bluered, zoom=zoom)
-        figure.update_layout(mapbox_style="carto-positron")
-            
-        figure.update_layout(mapbox_center={'lat': relayoutData['mapbox.center']['lat'], 'lon': relayoutData['mapbox.center']['lon']})
-        #print(figure['layout']['mapbox'])
-        return figure
-    else:
-        raise PreventUpdate
-
     
 
 @callback(
