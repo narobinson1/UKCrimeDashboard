@@ -29,45 +29,46 @@ SIDEBAR_STYLE = {
 
 CONTENT_STYLE = {
     "margin-left": "22rem",
-    "margin-right": "0",
-    "margin-top": "0",
 }
 
 # App layout
-app.layout = dbc.Container([
-    html.Div(
-        children=[
-            dbc.Row([
-                html.Div('UK Crime rates'),
-                html.Div('Choose locations', id='dropdown-text')
-            ]),
-            dbc.Row([
-                dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
-                value=['London', 'Manchester', 'Liverpool'],
-                multi=True,
-                id='dropdown-component-final')
-            ])
-        ], style=SIDEBAR_STYLE),
+app.layout = html.Div(
+    children=[
+        html.Div(
+            children=[
+                dbc.Row([
+                    html.Div('UK Crime rates'),
+                    html.Div('Choose locations', id='dropdown-text')
+                ]),
+                dbc.Row([
+                    dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
+                    value=['London', 'Manchester', 'Liverpool'],
+                    multi=True,
+                    id='dropdown-component-final')
+                ])
+            ], style=SIDEBAR_STYLE),
         
-    html.Div(
-        children=[
-            dbc.Row([
-                dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={}, config={'displayModeBar':False})])
-            ])
-        ], style=CONTENT_STYLE),
-        
-    html.Div(
-        children=[
-            dbc.Row([
-                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={}, config={'displayModeBar':False})])
-            ]),
-            dbc.Row([
-                dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={}, config={'displayModeBar':False})])
-            ]),
-        ], style=CONTENT_STYLE),
-    
-    dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))
-], fluid=True)
+        html.Div(
+            children=[
+                html.Div(
+                    children=[
+                        dbc.Row([
+                            dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={}, config={'displayModeBar':False})])
+                        ])
+                    ]),
+                    
+                html.Div(
+                    children=[
+                        dbc.Row([
+                            dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={}, config={'displayModeBar':False})])
+                        ]),
+                        dbc.Row([
+                            dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={}, config={'displayModeBar':False})])
+                        ]),
+                    ]),
+                html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
+            ], style=CONTENT_STYLE)
+])
 
 
 @callback(
