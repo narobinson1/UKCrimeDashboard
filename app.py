@@ -67,8 +67,8 @@ app.layout = html.Div(
                         ]),
                     ]),
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
-            ], style=CONTENT_STYLE)
-])
+            ], style=CONTENT_STYLE,)
+], style={"fluid":True})
 
 
 @callback(
