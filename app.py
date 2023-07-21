@@ -17,28 +17,55 @@ import requests
 external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
+SIDEBAR_STYLE = {
+    "position":"fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "22rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
+
+CONTENT_STYLE = {
+    "margin-left": "22rem",
+    "margin-right": "0",
+    "margin-top": "0",
+}
+
 # App layout
 app.layout = dbc.Container([
-    dbc.Row([
-        html.Div('UK Crime rates'),
-        html.Div('Choose locations', id='dropdown-text')
-    ]),
-    dbc.Row([
-        dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
-            value=['London', 'Manchester', 'Liverpool'],
-            multi=True,
-            id='dropdown-component-final')
-    ]),
-    dbc.Row([
-        dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={})])
-    ]),
+    html.Div(
+        children=[
+            dbc.Row([
+                html.Div('UK Crime rates'),
+                html.Div('Choose locations', id='dropdown-text')
+            ]),
+            dbc.Row([
+                dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
+                value=['London', 'Manchester', 'Liverpool'],
+                multi=True,
+                id='dropdown-component-final')
+            ])
+        ], style=SIDEBAR_STYLE),
+        
+    html.Div(
+        children=[
+            dbc.Row([
+                dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={})])
+            ])
+        ], style=CONTENT_STYLE),
+        
+    html.Div(
+        children=[
+            dbc.Row([
+                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={})])
+            ]),
+            dbc.Row([
+                dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={})])
+            ]),
+        ], style=CONTENT_STYLE),
     
-    dbc.Row([
-        dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={})])
-    ]),
-    dbc.Row([
-        dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={})])
-    ]),
     dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))
 ], fluid=True)
 
@@ -81,7 +108,8 @@ def update_map(dropdown_input, state):
     State('memory-output', 'data')
 )
 def update_graph(dropdown_input, state):
-    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results')
+    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=300)
+    print(figure['layout'])
     return figure
 
     
@@ -96,17 +124,17 @@ def update_graph(dropdown_input, state):
 def display_click(click_data_graph, click_data_map, value, state):
     if ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
-        figure = px.bar(get_counts_df(location, state)["category"].value_counts())
+        figure = px.bar(get_counts_df(location, state)["category"].value_counts(), height=300)
         return figure
 
     if ctx.triggered_id == 'dropdown-component-final':
         label = value[0]
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts())
+        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=300)
         return figure
         
     if ctx.triggered_id == 'output-graph-1':
         label = click_data_graph['points'][0]['label']
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts())
+        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=300)
         return figure
 
 
