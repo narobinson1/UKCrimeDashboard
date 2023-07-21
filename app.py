@@ -29,8 +29,6 @@ SIDEBAR_STYLE = {
 
 CONTENT_STYLE = {
     "margin-left": "22rem",
-    "background-color": "#f8a9fa"
-    
 }
 
 INDIVIDUAL_CONTENT_STYLE = {
@@ -65,19 +63,45 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                            dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={}, config={'displayModeBar':False, 'autosizable':True})])
+                            dcc.Loading(
+                                children=[
+                                    dcc.Graph(
+                                        figure={},
+                                        config={'displayModeBar':False, 'autosizable':True},
+                                        id="output-map-1")
+                                ],
+                                id="map-loading-1")
                     ]
                 ),
                 html.Div(
                     children=[
                         html.Div(
                             children=[
-                                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={'layout': {'autosize': True, 'margin': {'b':0, 'r':0, 'l':0, 't':0}}}, config={'displayModeBar':False})])
+                                dcc.Loading(
+                                    children=[
+                                        dcc.Graph(
+                                            figure={
+                                                'layout':{
+                                                    'autosize': True,
+                                                    'margin': {'b':0, 'r':0, 'l':0, 't':0}}},
+                                            config={'displayModeBar':False},
+                                            id="output-graph-1")
+                                    ],
+                                    id="graph-loading-1"
+                                )
                             ]
                         ),
                         html.Div(
                             children=[
-                                dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={}, config={'displayModeBar':False})])
+                                dcc.Loading(
+                                    children=[
+                                        dcc.Graph(
+                                            figure={},
+                                            config={'displayModeBar':False}
+                                            id="output-graph-2"
+                                        )
+                                    ],
+                                    id="graph-loading-2")
                             ],
                             style={"height":"100%"}
                         ),
@@ -130,7 +154,7 @@ def update_map(dropdown_input, state):
     State('memory-output', 'data')
 )
 def update_graph(dropdown_input, state):
-    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=300)
+    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200)
     print(figure['layout'])
     return figure
 
@@ -146,17 +170,17 @@ def update_graph(dropdown_input, state):
 def display_click(click_data_graph, click_data_map, value, state):
     if ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
-        figure = px.bar(get_counts_df(location, state)["category"].value_counts(), height=300)
+        figure = px.bar(get_counts_df(location, state)["category"].value_counts(), height=200)
         return figure
 
     if ctx.triggered_id == 'dropdown-component-final':
         label = value[0]
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=300)
+        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=200)
         return figure
         
     if ctx.triggered_id == 'output-graph-1':
         label = click_data_graph['points'][0]['label']
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=300)
+        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=200)
         return figure
 
 
