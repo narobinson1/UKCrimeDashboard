@@ -52,17 +52,17 @@ app.layout = dbc.Container([
     html.Div(
         children=[
             dbc.Row([
-                dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={})])
+                dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={}, config={'displayModeBar':False})])
             ])
         ], style=CONTENT_STYLE),
         
     html.Div(
         children=[
             dbc.Row([
-                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={})])
+                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={}, config={'displayModeBar':False})])
             ]),
             dbc.Row([
-                dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={})])
+                dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={}, config={'displayModeBar':False})])
             ]),
         ], style=CONTENT_STYLE),
     
