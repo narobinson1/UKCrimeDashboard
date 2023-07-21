@@ -56,6 +56,37 @@ def update_dropdown(json_data):
     return options, values
 
 
+<<<<<<< HEAD
+=======
+
+@callback(
+    Output('output-map-1', 'figure', allow_duplicate=True),
+    Input('output-map-1', 'clickData'),
+    State('dropdown-component-final', 'value'),
+    State('memory-output', 'data'),
+    prevent_initial_call=True
+)
+def update_map(click_data_map, dropdown_state, memory_state):
+    location = click_data_map['points'][0]['hovertext']
+    data = get_counts_json(location, memory_state)
+    print(data[0])
+    lat = []
+    lng = []
+    category = []
+    for x in data:
+        lat.append(float(x['location']['latitude']))
+        lng.append(float(x['location']['longitude']))
+        category.append(x['category'])
+        
+    lat = pd.Series(lat)
+    lng = pd.Series(lng)
+    category = pd.Series(category)
+        
+        
+    figure = px.scatter_mapbox(lat=lat, lon=lng, color=category, zoom=11)
+    figure.update_layout(mapbox_style="carto-positron")
+    return figure
+>>>>>>> be0fe5c0e23c7d480163aa7f03ccb2232a44de6b
     
 
 @callback(
