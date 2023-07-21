@@ -72,13 +72,14 @@ app.layout = html.Div(
                     children=[
                         html.Div(
                             children=[
-                                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={}, config={'displayModeBar':False})])
+                                dcc.Loading(id="graph-loading-1", children=[dcc.Graph(id="output-graph-1", figure={'layout': {'autosize': True, 'margin': {'b':0, 'r':0, 'l':0, 't':0}}}, config={'displayModeBar':False})])
                             ]
                         ),
                         html.Div(
                             children=[
                                 dcc.Loading(id="graph-loading-2", children=[dcc.Graph(id="output-graph-2", figure={}, config={'displayModeBar':False})])
-                            ]
+                            ],
+                            style={"height":"100%"}
                         ),
                     ]
                 ),
@@ -116,7 +117,9 @@ def update_map(dropdown_input, state):
     print(lat)
     location = df.city
     figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Bluered, zoom=5)
-    figure.update_layout(mapbox_style="carto-positron")
+    figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0})
+    
+    
     return figure
 
 
