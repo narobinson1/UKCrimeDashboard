@@ -30,7 +30,7 @@ app.layout = dbc.Container([
             id='dropdown-component-final')
     ]),
     dbc.Row([
-        dcc.Graph(id="output-map-1", figure={})
+        dcc.Loading(id="map-loading-1", children=[dcc.Graph(id="output-map-1", figure={})])
     ]),
     
     dbc.Row([
