@@ -18,20 +18,15 @@ external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 COLORS = {
-    "top-bar-background": "#2a2630",
+    "top-bar-background": "#172952",
     "top-bar-color": "#406cc9",
     "content-background": "#2a2630"
 }
 
 TOPBAR_STYLE = {
-    "top": 0,
-    "left": 0,
-    "right": 0,
-    "width": "100%",
-    "height": "10rem",
     "padding": "2rem 1rem",
     "background-color": COLORS['top-bar-background'],
-    "color": COLORS['top-bar-color']
+    "color": COLORS['top-bar-color'],
 }
 
 CONTENT_STYLE = {
@@ -46,18 +41,24 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.H1('UK Crime rates'),
-                        html.Div('Choose locations', id='dropdown-text')
-                    ]
+                        html.Div(
+                            children=[
+                                html.H1('UK Crime rates'),
+                                html.Div('Choose locations', id='dropdown-text')
+                            ]
+                        ),
+                        html.Div(
+                            children=[
+                                dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
+                                value=['London', 'Manchester', 'Liverpool'],
+                                multi=True,
+                                id='dropdown-component-final')
+                            ]
+                        )
+                    ],
+                    style={"padding":"2rem", "background-color": COLORS['content-background']}
                 ),
-                html.Div(
-                    children=[
-                        dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
-                        value=['London', 'Manchester', 'Liverpool'],
-                        multi=True,
-                        id='dropdown-component-final')
-                    ]
-                )
+                
             ],
             style=TOPBAR_STYLE
         ),
@@ -115,7 +116,7 @@ app.layout = html.Div(
             ],
             style=CONTENT_STYLE
         ),
-    ], style={"fluid":True})
+    ], style={"fluid":True, "background-color": "#172952"})
 
 
 @callback(
