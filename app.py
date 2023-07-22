@@ -52,6 +52,7 @@ app.layout = html.Div(
                                 dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
                                 value=['London', 'Manchester', 'Liverpool'],
                                 multi=True,
+                                style={'background-color': COLORS['top-bar-background']},
                                 id='dropdown-component-final')
                             ]
                         )
