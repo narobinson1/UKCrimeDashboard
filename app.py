@@ -80,6 +80,10 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     children=[
+                        dcc.Tabs(id='tabs-graphs', value='tab-1', children=[
+                            dcc.Tab(label='Tab one', value='tab-1'),
+                            dcc.Tab(label='Tab two', value='tab-2')]
+                        ),
                         html.Div(
                             children=[
                                 dcc.Loading(
@@ -90,24 +94,10 @@ app.layout = html.Div(
                                                     'autosize': True,
                                                     'margin': {'b':0, 'r':0, 'l':0, 't':0}}},
                                             config={'displayModeBar':False},
-                                            id="output-graph-1")
+                                            id="output-graph")
                                     ],
                                     id="graph-loading-1"
                                 )
-                            ],
-                            style={"margin": "5rem"}
-                        ),
-                        html.Div(
-                            children=[
-                                dcc.Loading(
-                                    children=[
-                                        dcc.Graph(
-                                            figure={},
-                                            config={'displayModeBar':False},
-                                            id="output-graph-2"
-                                        )
-                                    ],
-                                    id="graph-loading-2")
                             ],
                             style={"margin": "5rem"}
                         ),
@@ -120,7 +110,86 @@ app.layout = html.Div(
         ),
     ], style={"fluid":True, "background-color": "#172952"})
 
+@callback(
+    Output('output-graph', 'figure', allow_duplicate=True),
+    Input('tabs-graphs', 'value'),
+    State('dropdown-component-final', 'value'),
+    State('memory-output', 'data'),
+    prevent_initial_call=True
+)
+def tab_defaults(tab, dropdown_input, state):
+    if tab == 'tab-1':
+        figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
+        return figure
+    if tab == 'tab-2':
+        location = dropdown_input[0]
+        df = get_counts_df(location, state)["category"].value_counts()
+        figure = px.bar(df, height=200, title="Category counts", color_discrete_sequence=[COLORS['general']]*len(df))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
+        return figure
+        
+    
+@callback(
+    Output('output-graph', 'figure'),
+    Input('dropdown-component-final', 'value'),
+    Input('output-map-1', 'clickData'),
+    State('tabs-graphs', 'value'),
+    State('memory-output', 'data')
+)
+def load_tab(dropdown_input, click_data_map, tab, state):
+    if tab == 'tab-1' and ctx.triggered_id == 'dropdown-component-final':
+        figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
+        print(1)
+        return figure
+        
+#    if tab == 'tab-1' and ctx.triggered_id == 'tabs-graph':
+#        figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
+    if tab == 'tab-1' and ctx.triggered_id == 'output-map-1':
+        print(2)
+        raise PreventUpdate
+        
+    if tab == 'tab-2' and ctx.triggered_id == 'output-map-1':
+        location = click_data_map['points'][0]['hovertext']
+        print(location)
+        df = get_counts_df(location, state)["category"].value_counts()
+        figure = px.bar(df, height=200, title="Category counts", color_discrete_sequence=[COLORS['general']]*len(df))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
+        print(3)
+        print(figure)
+        return figure
+#    if tab == 'tab-2' and ctx.triggered_id == 'tabs-graph':
+#        location = dropdown_list[0]
+#        df = get_counts_df(location, state)["category"].value_counts()
+#        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
+    if tab == 'tab-2' and ctx.triggered_id == 'dropdown-component-final':
+        print(4)
+        raise PreventUpdate
+    
 
+    
+
+
+    
+        
+    
 @callback(
     Output('dropdown-component-final', 'options'),
     Output('dropdown-component-final', 'value'),
@@ -149,61 +218,65 @@ def update_map(dropdown_input, state):
     location = df.city
     figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Blues, zoom=5, height=300)
     figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0}, paper_bgcolor=COLORS['content-background'], coloraxis_colorbar_showticklabels=False, coloraxis_colorbar_title="")
-    
-    
+
+
     return figure
 
 
 
-@callback(
-    Output('output-graph-1', 'figure'),
-    Input('dropdown-component-final', 'value'),
-    State('memory-output', 'data')
-)
-def update_graph(dropdown_input, state):
-    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
-    figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
-    figure.update_xaxes(showticklabels=False, title_text="")
-    figure.update_yaxes(showticklabels=False, title_text="")
-    
-    return figure
+#@callback(
+#    Output('output-graph', 'figure'),
+#    Input('dropdown-component-final', 'value'),
+#    State('tabs-graphs', 'value'),
+#    State('memory-output', 'data')
+#)
+#def update_graph(dropdown_input, tab, state):
+#    if tab == 'tab-1':
+#        figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
+#    else:
+#        raise PreventUpdate
+
 
     
-    
-@callback(
-    Output('output-graph-2', 'figure'),
-    Input('output-graph-1', 'clickData'),
-    Input('output-map-1', 'clickData'),
-    Input('dropdown-component-final', 'value'),
-    State('memory-output', 'data')
-)
-def display_click(click_data_graph, click_data_map, value, state):
-    if ctx.triggered_id == 'output-map-1':
-        location = click_data_map['points'][0]['hovertext']
-        df = get_counts_df(location, state)["category"].value_counts()
-        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
-        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        return figure
 
-    if ctx.triggered_id == 'dropdown-component-final':
-        label = value[0]
-        df = get_counts_df(label, state)["category"].value_counts()
-        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
-        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        return figure
-        
-    if ctx.triggered_id == 'output-graph-1':
-        label = click_data_graph['points'][0]['label']
-        df = get_counts_df(label, state)["category"].value_counts()
-        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
-        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        return figure
+#@callback(
+#    Output('output-graph', 'figure'),
+#    Input('output-graph', 'clickData'),
+#
+#    Input('dropdown-component-final', 'value'),
+#    State('memory-output', 'data')
+#)
+#def display_click(click_data_graph, click_data_map, value, state):
+#    if ctx.triggered_id == 'output-map-1':
+#        location = click_data_map['points'][0]['hovertext']
+#        df = get_counts_df(location, state)["category"].value_counts()
+#        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
+#
+#    if ctx.triggered_id == 'dropdown-component-final':
+#        label = value[0]
+#        df = get_counts_df(label, state)["category"].value_counts()
+#        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
+#
+#    if ctx.triggered_id == 'output-graph':
+#        label = click_data_graph['points'][0]['label']
+#        df = get_counts_df(label, state)["category"].value_counts()
+#        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+#        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+#        figure.update_xaxes(showticklabels=False, title_text="")
+#        figure.update_yaxes(showticklabels=False, title_text="")
+#        return figure
 
 
 
