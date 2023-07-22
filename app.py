@@ -17,24 +17,27 @@ import requests
 external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
+COLORS = {
+    "side-bar-background": "#2a2630",
+    "side-bar-color": "#FFFFFF",
+    "content-background": "#2a2630"
+}
+
 SIDEBAR_STYLE = {
-    "position":"fixed",
     "top": 0,
     "left": 0,
-    "bottom": 0,
-    "width": "22rem",
+    "right": 0,
+    "width": "100%",
+    "height": "10rem",
     "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
+    "background-color": COLORS['side-bar-background'],
+    "color": COLORS['side-bar-color']
 }
 
 CONTENT_STYLE = {
-    "margin-left": "22rem",
+    "background-color": COLORS['content-background']
 }
 
-INDIVIDUAL_CONTENT_STYLE = {
-    "height": "100%",
-    "width": "100%"
-}
 
 # App layout
 app.layout = html.Div(
@@ -103,7 +106,6 @@ app.layout = html.Div(
                                     ],
                                     id="graph-loading-2")
                             ],
-                            style={"height":"100%"}
                         ),
                     ]
                 ),
