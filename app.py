@@ -24,7 +24,6 @@ COLORS = {
 }
 
 TOPBAR_STYLE = {
-    "padding": "2rem 1rem",
     "background-color": COLORS['top-bar-background'],
     "color": COLORS['top-bar-color'],
 }
@@ -111,7 +110,7 @@ app.layout = html.Div(
                             ],
                             style={"margin": "5rem", "border": "solid"}
                         ),
-                    ]
+                    ],
                 ),
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
             ],
