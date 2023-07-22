@@ -19,8 +19,9 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 COLORS = {
     "top-bar-background": "#172952",
-    "top-bar-color": "#406cc9",
-    "content-background": "#2a2630"
+    "top-bar-color": "#028acf",
+    "content-background": "#2a2630",
+    "general": "#2fa4e7"
 }
 
 TOPBAR_STYLE = {
@@ -94,7 +95,7 @@ app.layout = html.Div(
                                     id="graph-loading-1"
                                 )
                             ],
-                            style={"margin": "5rem", "border": "solid"}
+                            style={"margin": "5rem"}
                         ),
                         html.Div(
                             children=[
@@ -108,7 +109,7 @@ app.layout = html.Div(
                                     ],
                                     id="graph-loading-2")
                             ],
-                            style={"margin": "5rem", "border": "solid"}
+                            style={"margin": "5rem"}
                         ),
                     ],
                     style={"padding":"1rem"}
@@ -146,8 +147,8 @@ def update_map(dropdown_input, state):
     lng = df.lng
     print(lat)
     location = df.city
-    figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Bluered, zoom=5)
-    figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0})
+    figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Blues, zoom=5, height=300)
+    figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0}, paper_bgcolor=COLORS['content-background'])
     
     
     return figure
@@ -160,8 +161,11 @@ def update_map(dropdown_input, state):
     State('memory-output', 'data')
 )
 def update_graph(dropdown_input, state):
-    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200)
-    print(figure['layout'])
+    figure = px.bar(get_totals(dropdown_input, state), x='mock_list', y='mock_results', height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+    figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['general'], 'size': 16})
+    figure.update_xaxes(showticklabels=False, title_text="")
+    figure.update_yaxes(showticklabels=False, title_text="")
+    
     return figure
 
     
@@ -176,17 +180,29 @@ def update_graph(dropdown_input, state):
 def display_click(click_data_graph, click_data_map, value, state):
     if ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
-        figure = px.bar(get_counts_df(location, state)["category"].value_counts(), height=200)
+        df = get_counts_df(location, state)["category"].value_counts()
+        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
         return figure
 
     if ctx.triggered_id == 'dropdown-component-final':
         label = value[0]
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=200)
+        df = get_counts_df(label, state)["category"].value_counts()
+        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
         return figure
         
     if ctx.triggered_id == 'output-graph-1':
         label = click_data_graph['points'][0]['label']
-        figure = px.bar(get_counts_df(label, state)["category"].value_counts(), height=200)
+        df = get_counts_df(label, state)["category"].value_counts()
+        figure = px.bar(df, height=200, title="Total count per location", color_discrete_sequence=[COLORS['general']]*len(df))
+        figure.update_layout(autosize=True, margin={'b':0,'r':0,'l':0,'t':50}, plot_bgcolor=COLORS['content-background'], paper_bgcolor=COLORS['content-background'], font={'color': COLORS['top-bar-color'], 'size': 16}, showlegend=False)
+        figure.update_xaxes(showticklabels=False, title_text="")
+        figure.update_yaxes(showticklabels=False, title_text="")
         return figure
 
 
