@@ -111,6 +111,7 @@ app.layout = html.Div(
                             style={"margin": "5rem", "border": "solid"}
                         ),
                     ],
+                    style={"padding":"1rem"}
                 ),
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
             ],
