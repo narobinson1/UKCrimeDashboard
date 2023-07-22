@@ -148,7 +148,7 @@ def update_map(dropdown_input, state):
     print(lat)
     location = df.city
     figure = px.scatter_mapbox(lat=lat, lon=lng, color=totals, size=totals, hover_name=location, color_continuous_scale=px.colors.sequential.Blues, zoom=5, height=300)
-    figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0}, paper_bgcolor=COLORS['content-background'])
+    figure.update_layout(mapbox_style="carto-positron", autosize=True, margin={'b':0,'r':0,'l':0,'t':0}, paper_bgcolor=COLORS['content-background'], coloraxis_colorbar_showticklabels=False, coloraxis_colorbar_title="")
     
     
     return figure
