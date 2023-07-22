@@ -92,7 +92,8 @@ app.layout = html.Div(
                                     ],
                                     id="graph-loading-1"
                                 )
-                            ]
+                            ],
+                            style={"margin": "5rem", "border": "solid"}
                         ),
                         html.Div(
                             children=[
@@ -106,6 +107,7 @@ app.layout = html.Div(
                                     ],
                                     id="graph-loading-2")
                             ],
+                            style={"margin": "5rem", "border": "solid"}
                         ),
                     ]
                 ),
