@@ -97,7 +97,7 @@ app.layout = html.Div(
                                     children=[
                                         dcc.Graph(
                                             figure={},
-                                            config={'displayModeBar':False}
+                                            config={'displayModeBar':False},
                                             id="output-graph-2"
                                         )
                                     ],
