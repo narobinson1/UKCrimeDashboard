@@ -18,20 +18,20 @@ external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 COLORS = {
-    "side-bar-background": "#2a2630",
-    "side-bar-color": "#FFFFFF",
+    "top-bar-background": "#2a2630",
+    "top-bar-color": "#FFFFFF",
     "content-background": "#2a2630"
 }
 
-SIDEBAR_STYLE = {
+TOPBAR_STYLE = {
     "top": 0,
     "left": 0,
     "right": 0,
     "width": "100%",
     "height": "10rem",
     "padding": "2rem 1rem",
-    "background-color": COLORS['side-bar-background'],
-    "color": COLORS['side-bar-color']
+    "background-color": COLORS['top-bar-background'],
+    "color": COLORS['top-bar-color']
 }
 
 CONTENT_STYLE = {
@@ -59,7 +59,7 @@ app.layout = html.Div(
                     ]
                 )
             ],
-            style=SIDEBAR_STYLE
+            style=TOPBAR_STYLE
         ),
         
         html.Div(
