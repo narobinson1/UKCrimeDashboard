@@ -19,7 +19,7 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 COLORS = {
     "top-bar-background": "#2a2630",
-    "top-bar-color": "#FFFFFF",
+    "top-bar-color": "#406cc9",
     "content-background": "#2a2630"
 }
 
@@ -46,7 +46,7 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.Div('UK Crime rates'),
+                        html.H1('UK Crime rates'),
                         html.Div('Choose locations', id='dropdown-text')
                     ]
                 ),
