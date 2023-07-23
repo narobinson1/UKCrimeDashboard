@@ -66,7 +66,8 @@ app.layout = html.Div(
                                                         'borderColor':COLORS['general'],
                                                         'background-color':COLORS['content-background'],
                                                         'color':COLORS['general'],
-                                                        'font-weight':'bold'
+                                                        'font-weight':'bold',
+                                                        'box-shadow':'0 0 10px #2fa4e7'
                                             }
                                 ),
                                 html.H1('UK Crime rates'),
