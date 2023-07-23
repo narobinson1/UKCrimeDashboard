@@ -80,9 +80,21 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     children=[
-                        dcc.Tabs(id='tabs-graphs', value='tab-1', children=[
-                            dcc.Tab(label='Tab one', value='tab-1'),
-                            dcc.Tab(label='Tab two', value='tab-2')]
+                        dcc.Tabs(
+                            children=[
+                                dcc.Tab(label='Tab one', value='tab-1'),
+                                dcc.Tab(label='Tab two', value='tab-2')
+                            ],
+                            colors={
+                                'primary':COLORS['content-background'],
+                                'background':COLORS['content-background']
+                            },
+                            content_style={
+                                'border':COLORS['content-background'],
+                                'color':COLORS['general']
+                            },
+                            value='tab-1',
+                            id='tabs-graphs',
                         ),
                         html.Div(
                             children=[
