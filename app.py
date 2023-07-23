@@ -38,7 +38,8 @@ tab_style = {
     "borderBottomColor": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
-    "color": COLORS['general']
+    "color": COLORS['general'],
+    
 }
 
 tab_selected_style = {
@@ -48,6 +49,7 @@ tab_selected_style = {
     "color": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
+    "box-shadow":"0 10px 16px -6px #2fa4e7"
 }
 
 # App layout
@@ -114,8 +116,8 @@ app.layout = html.Div(
                     children=[
                         dcc.Tabs(
                             children=[
-                                dcc.Tab(label='Tab one', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                dcc.Tab(label='Tab two', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                dcc.Tab(label='By Total', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                dcc.Tab(label='By Category', value='tab-2', style=tab_style, selected_style=tab_selected_style)
                             ],
                             colors={
                                 'primary':COLORS['content-background'],
