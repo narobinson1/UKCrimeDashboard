@@ -51,8 +51,13 @@ tab_selected_style = {
     "fontWeight": "bold",
 }
 
-# App layout
-app.layout = html.Div(
+url_bar_and_content_div = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+
+dashboard_layout = html.Div(
     children=[
         html.Div(
             children=[
@@ -60,7 +65,7 @@ app.layout = html.Div(
                     children=[
                         html.Div(
                             children=[
-                                html.Button('See behind the app', style={
+                                html.Button('Performance considerations', style={
                                                         'float':'right',
                                                         'padding':'16px',
                                                         'border':'3px solid',
@@ -161,6 +166,92 @@ app.layout = html.Div(
         ),
     ], style={"fluid":True, "background-color": "#172952"})
 
+behind_layout = html.Div(
+    children=[
+        html.Div(
+            children=[
+                html.Div(
+                    children=[
+                        html.Div(
+                            children=[
+                                html.Button('Return to dashboard', style={
+                                                        'float':'right',
+                                                        'padding':'16px',
+                                                        'border':'3px solid',
+                                                        'borderColor':COLORS['general'],
+                                                        'background-color':COLORS['content-background'],
+                                                        'color':COLORS['general'],
+                                                        'font-weight':'bold',
+                                                        'box-shadow':'0 0 10px #2fa4e7'
+                                            }
+                                ),
+                                html.H1('UK Crime rates'),
+                            ]
+                        ),
+                    ],
+                    style={"padding":"2rem", "background-color": COLORS['content-background']}
+                ),
+            ],
+            style=TOPBAR_STYLE
+        ),
+        
+        html.Div(
+            children=[
+                
+                html.Div(
+                    children=[
+                        dcc.Tabs(
+                            children=[
+                                dcc.Tab(label='Tab 1', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                dcc.Tab(label='Tab 2', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                            ],
+                            colors={
+                                'primary':COLORS['content-background'],
+                                'background':COLORS['content-background']
+                            },
+                            value='tab-1',
+                            id='tabs-graphs',
+                        ),
+                        html.Div(
+                            children=[
+                                html.Div(
+                                    children=[
+                                        html.H6('Tab content'),
+                                    ],
+                                    style={"padding-top": "2rem"},
+                                    id='results-header'
+                                ),
+                        
+                            ],
+                            id="graph-loading-1"
+                        )
+                    ],
+                    style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                ),
+            ],
+        ),
+    ],
+    style=CONTENT_STYLE)
+    
+app.layout = url_bar_and_content_div
+
+app.validation_layout = html.Div([
+    dashboard_layout,
+    behind_layout,
+    url_bar_and_content_div,
+])
+
+@callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname'),
+)
+def display_page(pathname):
+    if pathname == '/behind':
+        return behind_layout
+    if pathname == '/':
+        return dashboard_layout
+    else:
+        return '404'
 
 @callback(
     Output('output-graph', 'figure', allow_duplicate=True),
