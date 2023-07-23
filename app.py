@@ -127,6 +127,13 @@ app.layout = html.Div(
                             children=[
                                 dcc.Loading(
                                     children=[
+                                        html.Div(
+                                            children=[
+                                                html.H6('Showing results for London'),
+                                            ],
+                                            style={"padding-top": "2rem"},
+                                            id='results-header'
+                                        ),
                                         dcc.Graph(
                                             figure={
                                                 'layout':{
@@ -142,7 +149,7 @@ app.layout = html.Div(
                                     id="graph-loading-1"
                                 )
                             ],
-                            style={"padding": "3rem"}
+                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
                         ),
                     ],
                 ),
@@ -155,6 +162,7 @@ app.layout = html.Div(
 
 @callback(
     Output('output-graph', 'figure', allow_duplicate=True),
+    Output('results-header', 'children', allow_duplicate=True),
     Input('tabs-graphs', 'value'),
     State('dropdown-component-final', 'value'),
     State('memory-output', 'data'),
@@ -167,7 +175,6 @@ def tab_defaults(tab, dropdown_input, state):
                     x='mock_list',
                     y='mock_results',
                     height=200,
-                    title="Total count per location",
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input)
         )
         
@@ -181,7 +188,9 @@ def tab_defaults(tab, dropdown_input, state):
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
         
-        return figure
+        header = html.H4('Showing results for chosen locations...')
+        
+        return figure, header
         
     if tab == 'tab-2':
         location = dropdown_input[0]
@@ -189,7 +198,6 @@ def tab_defaults(tab, dropdown_input, state):
         figure = px.bar(
                     df,
                     height=200,
-                    title="Category counts",
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
         
@@ -204,11 +212,14 @@ def tab_defaults(tab, dropdown_input, state):
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
         
-        return figure
+        header = html.H4('Showing results for {}'.format(location))
+        
+        return figure, header
         
     
 @callback(
     Output('output-graph', 'figure'),
+    Output('results-header', 'children'),
     Input('dropdown-component-final', 'value'),
     Input('output-map-1', 'clickData'),
     State('tabs-graphs', 'value'),
@@ -226,7 +237,6 @@ def load_tab(dropdown_input, click_data_map, tab, state):
                     x='mock_list',
                     y='mock_results',
                     height=200,
-                    title="Total count per location",
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
                     
         figure.update_layout(
@@ -239,7 +249,9 @@ def load_tab(dropdown_input, click_data_map, tab, state):
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
 
-        return figure
+        header = html.H4('Showing results for chosen locations...')
+    
+        return figure, header
         
     if tab == 'tab-2' and ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
@@ -247,7 +259,6 @@ def load_tab(dropdown_input, click_data_map, tab, state):
         figure = px.bar(
                     df,
                     height=200,
-                    title="Category counts",
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
         figure.update_layout(
@@ -261,7 +272,9 @@ def load_tab(dropdown_input, click_data_map, tab, state):
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
 
-        return figure
+        header = html.H4('Showing results for {}'.format(location))
+        
+        return figure, header
         
     
 
