@@ -87,12 +87,17 @@ app.layout = html.Div(
                             dcc.Loading(
                                 children=[
                                     dcc.Graph(
-                                        figure={},
+                                        figure={
+                                            'layout':{
+                                                'height': 300
+                                            }
+                                        },
                                         config={'displayModeBar':False, 'autosizable':True},
                                         id="output-map-1")
                                 ],
                                 id="map-loading-1")
-                    ]
+                    ],
+                    
                 ),
                 html.Div(
                     children=[
@@ -115,15 +120,19 @@ app.layout = html.Div(
                                         dcc.Graph(
                                             figure={
                                                 'layout':{
+                                                    'height': 200,
                                                     'autosize': True,
-                                                    'margin': {'b':0, 'r':0, 'l':0, 't':0}}},
+                                                    'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                }
+                                            },
                                             config={'displayModeBar':False},
-                                            id="output-graph")
+                                            id="output-graph"
+                                        )
                                     ],
                                     id="graph-loading-1"
                                 )
                             ],
-                            style={"margin": "5rem"}
+                            style={"margin": "2rem"}
                         ),
                     ],
                     style={"padding":"1rem"}
