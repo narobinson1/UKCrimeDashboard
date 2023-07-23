@@ -215,8 +215,9 @@ behind_layout = html.Div(
                     children=[
                         dcc.Tabs(
                             children=[
-                                dcc.Tab(label='Tab 1', value='tab-1-behind', style=tab_style, selected_style=tab_selected_style),
-                                dcc.Tab(label='Tab 2', value='tab-2-behind', style=tab_style, selected_style=tab_selected_style)
+                                dcc.Tab(label='Data retrieval', value='tab-1-behind', style=tab_style, selected_style=tab_selected_style),
+                                dcc.Tab(label='Callback function executions', value='tab-2-behind', style=tab_style, selected_style=tab_selected_style),
+                                dcc.Tab(label='Figure update operations', value='tab-3-behind', style=tab_style, selected_style=tab_selected_style),
                             ],
                             colors={
                                 'primary':COLORS['content-background'],
@@ -260,9 +261,11 @@ app.validation_layout = html.Div([
 )
 def display_tab_content(tab):
     if tab == 'tab-1-behind':
-        return 'TAB 1'
+        return 'SQL Databricks, UK GOV API'
     if tab == 'tab-2-behind':
-        return 'TAB 2'
+        return 'Memoization'
+    if tab == 'tab-3-behind':
+        return 'Patch object'
 
 @callback(
     Output('page-content', 'children'),
