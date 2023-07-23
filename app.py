@@ -59,6 +59,16 @@ app.layout = html.Div(
                     children=[
                         html.Div(
                             children=[
+                                html.Button('See behind the app', style={
+                                                        'float':'right',
+                                                        'padding':'16px',
+                                                        'border':'3px solid',
+                                                        'borderColor':COLORS['general'],
+                                                        'background-color':COLORS['content-background'],
+                                                        'color':COLORS['general'],
+                                                        'font-weight':'bold'
+                                            }
+                                ),
                                 html.H1('UK Crime rates'),
                                 html.Div('Choose locations', id='dropdown-text')
                             ]
