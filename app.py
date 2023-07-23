@@ -215,15 +215,15 @@ behind_layout = html.Div(
                     children=[
                         dcc.Tabs(
                             children=[
-                                dcc.Tab(label='Tab 1', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                dcc.Tab(label='Tab 2', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                dcc.Tab(label='Tab 1', value='tab-1-behind', style=tab_style, selected_style=tab_selected_style),
+                                dcc.Tab(label='Tab 2', value='tab-2-behind', style=tab_style, selected_style=tab_selected_style)
                             ],
                             colors={
                                 'primary':COLORS['content-background'],
                                 'background':COLORS['content-background']
                             },
-                            value='tab-1',
-                            id='tabs-graphs',
+                            value='tab-1-behind',
+                            id='tabs-behind',
                         ),
                         html.Div(
                             children=[
@@ -231,8 +231,8 @@ behind_layout = html.Div(
                                     children=[
                                         html.H6('Tab content'),
                                     ],
-                                    style={"padding-top": "2rem"},
-                                    id='results-header'
+                                    style={"padding-top": "2rem", "color":COLORS['general']},
+                                    id='tabs-content'
                                 ),
                         
                             ],
@@ -244,7 +244,7 @@ behind_layout = html.Div(
             ],
         ),
     ],
-    style=CONTENT_STYLE)
+    style={"background-color":COLORS['content-background']})
     
 app.layout = url_bar_and_content_div
 
@@ -253,6 +253,16 @@ app.validation_layout = html.Div([
     behind_layout,
     url_bar_and_content_div,
 ])
+
+@callback(
+    Output('tabs-content', 'children'),
+    Input('tabs-behind', 'value')
+)
+def display_tab_content(tab):
+    if tab == 'tab-1-behind':
+        return 'TAB 1'
+    if tab == 'tab-2-behind':
+        return 'TAB 2'
 
 @callback(
     Output('page-content', 'children'),
