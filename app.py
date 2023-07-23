@@ -34,15 +34,15 @@ CONTENT_STYLE = {
 }
 
 tab_style = {
-    "borderBottom": "1px solid #d6d6d6",
-    "borderBottomColor": '#FFFFFF',
+    "borderBottom": "1px solid",
+    "borderBottomColor": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
     "color": COLORS['general']
 }
 
 tab_selected_style = {
-    "borderBottom": "1px solid #d6d6d6",
+    "borderBottom": "2px solid",
     "borderBottomColor": COLORS['general'],
     "backgroundColor": COLORS['content-background'],
     "color": COLORS['general'],
