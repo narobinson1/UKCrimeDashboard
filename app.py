@@ -49,7 +49,6 @@ tab_selected_style = {
     "color": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
-    "box-shadow":"0 10px 16px -6px #2fa4e7"
 }
 
 # App layout
