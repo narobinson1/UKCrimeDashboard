@@ -54,7 +54,7 @@ tab_selected_style = {
 url_bar_and_content_div = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
-])
+], style={"background-color": COLORS['content-background'], "height":"100vh"})
 
 
 dashboard_layout = html.Div(
