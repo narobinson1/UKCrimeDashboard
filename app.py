@@ -65,16 +65,23 @@ dashboard_layout = html.Div(
                     children=[
                         html.Div(
                             children=[
-                                html.Button('Performance considerations', style={
-                                                        'float':'right',
-                                                        'padding':'16px',
-                                                        'border':'3px solid',
-                                                        'borderColor':COLORS['general'],
-                                                        'background-color':COLORS['content-background'],
-                                                        'color':COLORS['general'],
-                                                        'font-weight':'bold',
-                                                        'box-shadow':'0 0 10px #2fa4e7'
+                                dcc.Link(
+                                    children=[
+                                        html.Button(
+                                            children=['Performance considerations'],
+                                            style={
+                                                'float':'right',
+                                                'padding':'16px',
+                                                'border':'3px solid',
+                                                'borderColor':COLORS['general'],
+                                                'background-color':COLORS['content-background'],
+                                                'color':COLORS['general'],
+                                                'font-weight':'bold',
+                                                'box-shadow':'0 0 10px #2fa4e7'
                                             }
+                                        )
+                                    ],
+                                    href='/behind'
                                 ),
                                 html.H1('UK Crime rates'),
                                 html.Div('Choose locations', id='dropdown-text')
@@ -166,6 +173,7 @@ dashboard_layout = html.Div(
         ),
     ], style={"fluid":True, "background-color": "#172952"})
 
+
 behind_layout = html.Div(
     children=[
         html.Div(
@@ -174,17 +182,22 @@ behind_layout = html.Div(
                     children=[
                         html.Div(
                             children=[
-                                html.Button('Return to dashboard', style={
-                                                        'float':'right',
-                                                        'padding':'16px',
-                                                        'border':'3px solid',
-                                                        'borderColor':COLORS['general'],
-                                                        'background-color':COLORS['content-background'],
-                                                        'color':COLORS['general'],
-                                                        'font-weight':'bold',
-                                                        'box-shadow':'0 0 10px #2fa4e7'
-                                            }
-                                ),
+                                dcc.Link(
+                                    children=[
+                                    html.Button(
+                                        children=['Return to dashboard'],
+                                        style={
+                                            'float':'right',
+                                            'padding':'16px',
+                                            'border':'3px solid',
+                                            'borderColor':COLORS['general'],
+                                            'background-color':COLORS['content-background'],
+                                            'color':COLORS['general'],
+                                            'font-weight':'bold',
+                                            'box-shadow':'0 0 10px #2fa4e7'
+                                        }
+                                    )],
+                                    href='/'),
                                 html.H1('UK Crime rates'),
                             ]
                         ),
