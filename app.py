@@ -112,7 +112,7 @@ dashboard_layout = html.Div(
                                 dcc.Link(
                                     children=[
                                         html.Button(
-                                            children=['Performance considerations'],
+                                            children=['Performance statistics'],
                                             style={
                                                 'float':'right',
                                                 'padding':'16px',
