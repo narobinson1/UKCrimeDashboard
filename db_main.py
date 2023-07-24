@@ -10,11 +10,45 @@ def fetch_data(lat, lng):
     res = r.json()
     return res
     
-r = []
-for location in locations:
-    df_ = df[df['city'] == location]
-    data = fetch_data(df_.lat, df_.lng)
-    print(data[20])
+def store_cleaned_data(locations):
+    r = []
+    for location in locations:
+        df_ = df[df['city'] == location]
+        data = fetch_data(df_.lat, df_.lng)
+        for x in data:
+            # TODO SQL insert queries
+            
+            print(location, x['category'], x['location']['latitude'], x['location']['longitude'], x['month'])
+    return 0
+        
+def store_dropdown_data(locations):
+    r = []
+    for location in locations:
+        df_ = df[df['city'] == location]
+        data = fetch_data(df_.lat, df_.lng)
+        for x in data:
+            # TODO SQL insert queries
+            print(location, len(data))
+    return 0
+    
+def store_category_data(locations):
+    r = []
+    for location in locations:
+        df_ = df[df['city'] == location]
+        data = fetch_data(df_.lat, df_.lng)
+        df_ = pd.DataFrame(data)
+        df_ = pd.DataFrame(df_['category'].value_counts())
+
+        i_ = []
+        for x in df_.index:
+            i_.append(x)
+
+        for i in range(len(df_)):
+            # TODO SQL insert queries
+            print(location, i_[i], df_['category'][i])
+        
+    return 0
+
 
 # DB SCHEMA
 
