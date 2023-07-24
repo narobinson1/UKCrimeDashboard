@@ -53,7 +53,8 @@ tab_selected_style = {
 
 url_bar_and_content_div = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
+    html.Div(id='page-content'),
+    dcc.Store(id='lru-cache', storage_type='session', data='')
 ], style={"background-color": COLORS['content-background'], "height":"100vh"})
 
 # Fetch raw data
@@ -217,6 +218,21 @@ dashboard_layout = html.Div(
     ], style={"fluid":True, "background-color": "#172952"})
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 behind_layout = html.Div(
     children=[
         html.Div(
@@ -253,7 +269,6 @@ behind_layout = html.Div(
         
         html.Div(
             children=[
-                
                 html.Div(
                     children=[
                         dcc.Markdown(
@@ -267,7 +282,8 @@ behind_layout = html.Div(
                                         *Cache stores: {}*
                                 '''.format(fetch_data.cache_info().hits, fetch_data.cache_info().misses, fetch_data.cache_info().currsize)
                             ],
-                            style={'color':COLORS['general']}
+                            style={'color':COLORS['general']},
+                            id='cache-markdown'
                         ),
                     ],
                     style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
@@ -285,24 +301,83 @@ app.validation_layout = html.Div([
     url_bar_and_content_div,
 ])
 
-@callback(
-    Output('tabs-content', 'children'),
-    Input('tabs-behind', 'value')
-)
-def display_tab_content(tab):
-    if tab == 'tab-1-behind':
-        return 'SQL Databricks, UK GOV API'
-    if tab == 'tab-2-behind':
-        return 'Memoization'
-    if tab == 'tab-3-behind':
-        return 'Patch object'
+
 
 @callback(
     Output('page-content', 'children'),
     Input('url', 'pathname'),
+    State('lru-cache', 'data')
 )
-def display_page(pathname):
+def display_page(pathname, cache):
     if pathname == '/behind':
+        if cache == '':
+            cache_hits, cache_misses, cache_currsize = '?', '?', '?'
+        if cache != '':
+            cache_hits = cache[0]
+            cache_misses = cache[1]
+            cache_currsize = cache[3]
+            
+        behind_layout = html.Div(
+            children=[
+                html.Div(
+                    children=[
+                        html.Div(
+                            children=[
+                                html.Div(
+                                    children=[
+                                        dcc.Link(
+                                            children=[
+                                            html.Button(
+                                                children=['Return to dashboard'],
+                                                style={
+                                                    'float':'right',
+                                                    'padding':'16px',
+                                                    'border':'3px solid',
+                                                    'borderColor':COLORS['general'],
+                                                    'background-color':COLORS['content-background'],
+                                                    'color':COLORS['general'],
+                                                    'font-weight':'bold',
+                                                    'box-shadow':'0 0 10px #2fa4e7'
+                                                }
+                                            )],
+                                            href='/'),
+                                        html.H1('UK Crime rates'),
+                                    ]
+                                ),
+                            ],
+                            style={"padding":"2rem", "background-color": COLORS['content-background']}
+                        ),
+                    ],
+                    style=TOPBAR_STYLE
+                ),
+                
+                html.Div(
+                    children=[
+                        html.Div(
+                            children=[
+                                dcc.Markdown(
+                                    children=[
+                                        '''
+                                            ### Python
+                                            
+                                            * Functools lru_cache: data retrieval function calls with identical arguments are cached using lru_cache. The following data results from your interaction with the dashboard:
+                                                
+                                                *Cache hits: {},*
+                                                *Cache misses: {},*
+                                                *Cache stores: {}*
+                                        '''.format(cache_hits, cache_misses, cache_currsize)
+                                    ],
+                                    style={'color':COLORS['general']},
+                                    id='cache-markdown'
+                                ),
+                            ],
+                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                        ),
+                    ],
+                ),
+            ],
+            style={"background-color":COLORS['content-background']})
+        
         return behind_layout
     if pathname == '/':
         return dashboard_layout
@@ -312,6 +387,7 @@ def display_page(pathname):
 @callback(
     Output('output-graph', 'figure', allow_duplicate=True),
     Output('results-header', 'children', allow_duplicate=True),
+    Output('lru-cache', 'data'),
     Input('tabs-graphs', 'value'),
     State('dropdown-component-final', 'value'),
     State('memory-output', 'data'),
@@ -339,7 +415,9 @@ def tab_defaults(tab, dropdown_input, state):
         
         header = html.H4('Showing results for chosen locations...')
         
-        return figure, header
+        cache = fetch_data.cache_info()
+        
+        return figure, header, cache
         
     if tab == 'tab-2':
         location = dropdown_input[0]
@@ -363,7 +441,9 @@ def tab_defaults(tab, dropdown_input, state):
         
         header = html.H4('Showing results for {}'.format(location))
         
-        return figure, header
+        cache = fetch_data.cache_info()
+        
+        return figure, header, cache
         
     
 @callback(
