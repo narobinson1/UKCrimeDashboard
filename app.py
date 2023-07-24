@@ -11,7 +11,7 @@ import os
 import dash_bootstrap_components as dbc
 
 import requests
-
+import functools
 
 # Initialize the app - incorporate a Dash Bootstrap theme
 external_stylesheets = [dbc.themes.CERULEAN]
@@ -449,10 +449,16 @@ def update_map(dropdown_input, state):
 
 
 # Fetch raw data
-def fetch_data(lat=51.5072, lng=-0.1275):
+@functools.lru_cache()
+def fetch_data(hashable_tuple):
+    print(hashable_tuple)
+    lat_lng = list(hashable_tuple)
+    lat = list(lat_lng[0])
+    lng = list(lat_lng[1])
     payload = {'lat':lat, 'lng':lng}
     r = requests.post("https://data.police.uk/api/crimes-street/all-crime", params=payload)
     res = r.json()
+
     return res
 
 # Get totals from raw data
@@ -462,7 +468,8 @@ def get_totals(input, json_data):
     mock_results = []
     for mock_city in mock_list:
         inst = df[df['city'] == mock_city]
-        api_data = fetch_data(inst.lat, inst.lng)
+        hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
+        api_data = fetch_data(hashable_input)
         df_inst = pd.DataFrame(api_data)
         mock_results.append(len(df_inst))
     result = {'mock_list': mock_list, 'mock_results': mock_results}
@@ -473,13 +480,15 @@ def get_totals(input, json_data):
 def get_counts_df(city_value, json_data):
     df = pd.read_json(json_data, orient="split")
     inst = df[df['city'] == city_value]
-    api_data = fetch_data(inst.lat, inst.lng)
+    hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
+    api_data = fetch_data(hashable_input)
     return pd.DataFrame(api_data)
    
 def get_counts_json(city_value, json_data):
     df = pd.read_json(json_data, orient="split")
     inst = df[df['city'] == city_value]
-    api_data = fetch_data(inst.lat, inst.lng)
+    hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
+    api_data = fetch_data(hashable_input)
     return api_data
     
 if __name__ == '__main__':
