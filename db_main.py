@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-
+import hashlib
 import mysql.connector
 
 locations = ['London', 'Manchester']
@@ -17,10 +17,18 @@ def store_cleaned_data(locations):
     for location in locations:
         df_ = df[df['city'] == location]
         data = fetch_data(df_.lat, df_.lng)
+        
         for x in data:
-            # TODO SQL insert queries
+            input = [location, x['category'], x['location']['latitude'], x['location']['longitude'], x['month']]
+            s = ""
+            for x in input:
+                s += x
             
-            r.append(tuple([location, x['category'], x['location']['latitude'], x['location']['longitude'], x['month']]))
+            p_key = hashlib.sha256(s.encode()).hexdigest()
+            input.insert(0, p_key)
+            
+            r.append(tuple(input))
+            
     return r
         
 def store_dropdown_data(locations):
@@ -28,9 +36,16 @@ def store_dropdown_data(locations):
     for location in locations:
         df_ = df[df['city'] == location]
         data = fetch_data(df_.lat, df_.lng)
-        for x in data:
-            # TODO SQL insert queries
-            r.append(tuple([location, len(data)]))
+        input = [location, str(len(data))]
+        s = ""
+        for x in input:
+            s += x
+            
+        p_key = hashlib.sha256(s.encode()).hexdigest()
+        input.insert(0, p_key)
+        
+        r.append(tuple(input))
+
     return r
     
 def store_category_data(locations):
@@ -46,8 +61,15 @@ def store_category_data(locations):
             i_.append(x)
 
         for i in range(len(df_)):
-            # TODO SQL insert queries
-            r.append(tuple([location, i_[i], df_['category'][i]]))
+            input = [location, i_[i], str(df_['category'][i])]
+            s = ""
+            for x in input:
+                s += x
+            
+            p_key = hashlib.sha256(s.encode()).hexdigest()
+            input.insert(0, p_key)
+            
+            r.append(tuple(input))
             
     return r
 
@@ -60,13 +82,28 @@ cnx = mysql.connector.connect(
 
 cursor = cnx.cursor()
 
-insert_clean_data = ("INSERT INTO cleaned_data (location, category, lat, lng, month) VALUES (%s, %s, %s, %s, %s)")
+insert_clean_data = ("REPLACE INTO cleaned_data (hash, location, category, lat, lng, month) VALUES (%s, %s, %s, %s, %s, %s)")
 
 r = store_cleaned_data(locations)
 for t in r:
     cursor.execute(insert_clean_data, t)
-    
+
+insert_category_data = ("REPLACE INTO category_data (hash, location, category, count) VALUES (%s, %s, %s, %s)")
+
+r = store_category_data(locations)
+for t in r:
+    cursor.execute(insert_category_data, t)
+
+insert_dropdown_data = ("REPLACE INTO dropdown_data (hash, location, count) VALUES (%s, %s, %s)")
+
+r = store_dropdown_data(locations)
+for t in r:
+    cursor.execute(insert_dropdown_data, t)
+
+cnx.commit()
+cursor.close()
 cnx.close()
+
 # DB SCHEMA
 
 # table cleaned_data
@@ -76,13 +113,12 @@ cnx.close()
 
 # table dropdown_data
 
-# hash varchar, total_counts varchar, other stats...
+# hash varchar, count varchar, other stats...
 
 
 # table category_data
 
 # location varchar, category varchar, count varchar
-
 
 
 
