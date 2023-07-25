@@ -6,6 +6,9 @@ import mysql.connector
 locations = ['London', 'Manchester']
 df = pd.read_csv("gb_latlon.csv")
 
+locations = list(df['city'])[:10]
+
+
 def fetch_data(lat, lng):
     payload = {'lat':lat, 'lng':lng}
     r = requests.post("https://data.police.uk/api/crimes-street/all-crime", params=payload)
@@ -17,37 +20,39 @@ def store_cleaned_data(locations):
     for location in locations:
         df_ = df[df['city'] == location]
         data = fetch_data(df_.lat, df_.lng)
-        
+
         for x in data:
             input = [location, x['category'], x['location']['latitude'], x['location']['longitude'], x['month']]
             s = ""
             for x in input:
                 s += x
-            
+
             p_key = hashlib.sha256(s.encode()).hexdigest()
             input.insert(0, p_key)
-            
+
             r.append(tuple(input))
-            
+
     return r
-        
+
 def store_dropdown_data(locations):
     r = []
     for location in locations:
         df_ = df[df['city'] == location]
         data = fetch_data(df_.lat, df_.lng)
-        input = [location, str(len(data))]
+        print(list(df_.lat)[0])
+        input = [location, str(list(df_.lat)[0]), str(list(df_.lng)[0]), str(len(data))]
+
         s = ""
         for x in input:
             s += x
-            
+
         p_key = hashlib.sha256(s.encode()).hexdigest()
         input.insert(0, p_key)
-        
+
         r.append(tuple(input))
 
     return r
-    
+
 def store_category_data(locations):
     r = []
     for location in locations:
@@ -65,12 +70,12 @@ def store_category_data(locations):
             s = ""
             for x in input:
                 s += x
-            
+
             p_key = hashlib.sha256(s.encode()).hexdigest()
             input.insert(0, p_key)
-            
+
             r.append(tuple(input))
-            
+
     return r
 
 
@@ -94,7 +99,7 @@ r = store_category_data(locations)
 for t in r:
     cursor.execute(insert_category_data, t)
 
-insert_dropdown_data = ("REPLACE INTO dropdown_data (hash, location, count) VALUES (%s, %s, %s)")
+insert_dropdown_data = ("REPLACE INTO dropdown_data (hash, location, lat, lng, count) VALUES (%s, %s, %s, %s, %s)")
 
 r = store_dropdown_data(locations)
 for t in r:
@@ -113,7 +118,7 @@ cnx.close()
 
 # table dropdown_data
 
-# hash varchar, count varchar, other stats...
+# hash varchar, count varchar, lat varchar, lng varchar
 
 
 # table category_data

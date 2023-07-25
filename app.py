@@ -13,6 +13,8 @@ import dash_bootstrap_components as dbc
 import requests
 import functools
 
+import mysql.connector
+
 # Initialize the app - incorporate a Dash Bootstrap theme
 external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
@@ -57,49 +59,100 @@ url_bar_and_content_div = html.Div([
     dcc.Store(id='lru-cache', storage_type='session', data='')
 ], style={"background-color": COLORS['content-background'], "height":"100vh"})
 
-# Fetch raw data
+
+
+
+# Get totals from db
 @functools.lru_cache()
-def fetch_data(hashable_tuple):
-    print(hashable_tuple)
-    lat_lng = list(hashable_tuple)
-    lat = list(lat_lng[0])
-    lng = list(lat_lng[1])
-    payload = {'lat':lat, 'lng':lng}
-    r = requests.post("https://data.police.uk/api/crimes-street/all-crime", params=payload)
-    res = r.json()
+def get_count_graph(tuple_ls):
+    ls = []
+    for x in tuple_ls:
+        ls.append(list(x)[0])
 
-    return res
+    cnx = mysql.connector.connect(
+            user='root',
+            password='rootuser',
+            host='127.0.0.1',
+            database='ukgovcrime')
 
-# Get totals from raw data
-def get_totals(input, json_data):
-    mock_list = input
-    df = pd.read_json(json_data, orient="split")
-    mock_results = []
-    for mock_city in mock_list:
-        inst = df[df['city'] == mock_city]
-        hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
-        api_data = fetch_data(hashable_input)
-        df_inst = pd.DataFrame(api_data)
-        mock_results.append(len(df_inst))
-    result = {'mock_list': mock_list, 'mock_results': mock_results}
-    df = pd.DataFrame.from_dict(result)
+    cursor = cnx.cursor()
+    
+    r = tuple(ls)
+    format_strings = ','.join(['%s'] * len(r))
+    query_dropdown_data = ("SELECT * FROM dropdown_data WHERE location IN (%s)" % format_strings)
+    
+    cursor.execute(query_dropdown_data, r)
+
+    l = []
+    c = []
+    for (hash, location, lat, lng, count) in cursor:
+        l.append(location)
+        c.append(int(count))
+
+    d = {'location':l, 'count':c}
+    df = pd.DataFrame(d)
     return df
     
-# Get statistics from raw data
-def get_counts_df(city_value, json_data):
-    df = pd.read_json(json_data, orient="split")
-    inst = df[df['city'] == city_value]
-    hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
-    api_data = fetch_data(hashable_input)
-    return pd.DataFrame(api_data)
-   
-def get_counts_json(city_value, json_data):
-    df = pd.read_json(json_data, orient="split")
-    inst = df[df['city'] == city_value]
-    hashable_input = tuple([tuple(inst.lat), tuple(inst.lng)])
-    api_data = fetch_data(hashable_input)
-    return api_data
+# Get statistics from db
+@functools.lru_cache()
+def get_category(l):
+    cnx = mysql.connector.connect(
+            user='root',
+            password='rootuser',
+            host='127.0.0.1',
+            database='ukgovcrime')
+
+    cursor = cnx.cursor()
+    query_category_data = ("SELECT * FROM category_data WHERE location IN (%s)")
+    r = tuple([l])
+    cursor.execute(query_category_data, r)
+
+    ca = []
+    c = []
+    for (hash, location, category, count) in cursor:
+        ca.append(category)
+        c.append(int(count))
+
+    d = {'category':ca, 'count':c}
+    df = pd.DataFrame(d)
+    return df
     
+# Get statistics from db
+@functools.lru_cache()
+def get_count_map(tuple_ls):
+    ls = []
+    for x in tuple_ls:
+        ls.append(list(x)[0])
+        
+    cnx = mysql.connector.connect(
+            user='root',
+            password='rootuser',
+            host='127.0.0.1',
+            database='ukgovcrime')
+
+    cursor = cnx.cursor()
+    
+    r = tuple(ls)
+    format_strings = ','.join(['%s'] * len(r))
+    query_dropdown_data = ("SELECT * FROM dropdown_data WHERE location IN (%s)" % format_strings)
+
+    cursor.execute(query_dropdown_data, r)
+
+    l = []
+    la = []
+    lg = []
+    c = []
+    
+    for (hash, location, lat, lng, count) in cursor:
+        l.append(location)
+        la.append(float(lat))
+        lg.append(float(lng))
+        c.append(int(count))
+
+    
+    d = {'location':l, 'lat':la, 'lng':lg, 'count':c}
+    df = pd.DataFrame(d)
+    return df
 
 dashboard_layout = html.Div(
     children=[
@@ -273,14 +326,7 @@ behind_layout = html.Div(
                     children=[
                         dcc.Markdown(
                             children=[
-                                '''
-                                    ### Python
-                                    * Functools lru_cache: data retrieval function calls with identical arguments are cached using lru_cache. The following data results from your interaction with the dashboard:
-                                        
-                                        *Cache hits: {},*
-                                        *Cache misses: {},*
-                                        *Cache stores: {}*
-                                '''.format(fetch_data.cache_info().hits, fetch_data.cache_info().misses, fetch_data.cache_info().currsize)
+                            
                             ],
                             style={'color':COLORS['general']},
                             id='cache-markdown'
@@ -310,12 +356,20 @@ app.validation_layout = html.Div([
 )
 def display_page(pathname, cache):
     if pathname == '/behind':
+        
         if cache == '':
-            cache_hits, cache_misses, cache_currsize = '?', '?', '?'
+            location_hits, location_misses, location_currsize, map_hits, map_misses, map_currsize, category_hits, category_misses, category_currsize = '?', '?', '?', '?', '?', '?', '?', '?', '?'
+            
         if cache != '':
-            cache_hits = cache[0]
-            cache_misses = cache[1]
-            cache_currsize = cache[3]
+            location_hits = cache[0][0]
+            location_misses = cache[0][1]
+            location_currsize = cache[0][2]
+            map_hits = cache[0][0]
+            map_misses = cache[0][1]
+            map_currsize = cache[0][2]
+            category_hits = cache[0][0]
+            category_misses = cache[0][1]
+            category_currsize = cache[0][2]
             
         behind_layout = html.Div(
             children=[
@@ -362,10 +416,25 @@ def display_page(pathname, cache):
                                             
                                             * Functools lru_cache: data retrieval function calls with identical arguments are cached using lru_cache. The following data results from your interaction with the dashboard:
                                                 
+                                                Location cache:
+                                                
                                                 *Cache hits: {},*
                                                 *Cache misses: {},*
                                                 *Cache stores: {}*
-                                        '''.format(cache_hits, cache_misses, cache_currsize)
+                                                
+                                                Category cache:
+                                                
+                                                *Cache hits: {},*
+                                                *Cache misses: {},*
+                                                *Cache stores: {}*
+                                                
+                                                Map cache:
+                                                
+                                                *Cache hits: {},*
+                                                *Cache misses: {},*
+                                                *Cache stores: {}*
+                                                
+                                        '''.format(location_hits, location_misses, location_currsize, category_hits, category_misses, category_currsize, map_hits, map_misses, map_currsize)
                                     ],
                                     style={'color':COLORS['general']},
                                     id='cache-markdown'
@@ -390,15 +459,23 @@ def display_page(pathname, cache):
     Output('lru-cache', 'data'),
     Input('tabs-graphs', 'value'),
     State('dropdown-component-final', 'value'),
-    State('memory-output', 'data'),
     prevent_initial_call=True
 )
-def tab_defaults(tab, dropdown_input, state):
+def tab_defaults(tab, dropdown_input):
     if tab == 'tab-1':
+        l = []
+        for x in dropdown_input:
+            l.append(tuple([x]))
+        
+        hashable_input = tuple(l)
+        
+        df = get_count_graph(hashable_input)
+        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
+        
         figure = px.bar(
-                    get_totals(dropdown_input, state),
-                    x='mock_list',
-                    y='mock_results',
+                    df,
+                    x='location',
+                    y='count',
                     height=200,
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input)
         )
@@ -415,15 +492,22 @@ def tab_defaults(tab, dropdown_input, state):
         
         header = html.H4('Showing results for chosen locations...')
         
-        cache = fetch_data.cache_info()
+        cache = []
+        cache.append(get_count_graph.cache_info())
+        cache.append(get_category.cache_info())
+        cache.append(get_count_map.cache_info())
         
         return figure, header, cache
         
     if tab == 'tab-2':
         location = dropdown_input[0]
-        df = get_counts_df(location, state)["category"].value_counts()
+        df = get_category(location)
+        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
+        
         figure = px.bar(
                     df,
+                    x='category',
+                    y='count',
                     height=200,
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
@@ -441,7 +525,10 @@ def tab_defaults(tab, dropdown_input, state):
         
         header = html.H4('Showing results for {}'.format(location))
         
-        cache = fetch_data.cache_info()
+        cache = []
+        cache.append(get_count_graph.cache_info())
+        cache.append(get_category.cache_info())
+        cache.append(get_count_map.cache_info())
         
         return figure, header, cache
         
@@ -451,20 +538,28 @@ def tab_defaults(tab, dropdown_input, state):
     Output('results-header', 'children'),
     Input('dropdown-component-final', 'value'),
     Input('output-map-1', 'clickData'),
-    State('tabs-graphs', 'value'),
-    State('memory-output', 'data')
+    State('tabs-graphs', 'value')
 )
-def load_tab(dropdown_input, click_data_map, tab, state):
+def load_tab(dropdown_input, click_data_map, tab):
     if tab == 'tab-1' and ctx.triggered_id == 'output-map-1':
         raise PreventUpdate
     if tab == 'tab-2' and ctx.triggered_id == 'dropdown-component-final':
         raise PreventUpdate
         
     if tab == 'tab-1' and ctx.triggered_id == 'dropdown-component-final':
+        l = []
+        for x in dropdown_input:
+            l.append(tuple([x]))
+        
+        hashable_input = tuple(l)
+        
+        df = get_count_graph(hashable_input)
+        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
+        
         figure = px.bar(
-                    get_totals(dropdown_input, state),
-                    x='mock_list',
-                    y='mock_results',
+                    df,
+                    x='location',
+                    y='count',
                     height=200,
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
                     
@@ -484,9 +579,12 @@ def load_tab(dropdown_input, click_data_map, tab, state):
         
     if tab == 'tab-2' and ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
-        df = get_counts_df(location, state)["category"].value_counts()
+        df = get_category(location)
+        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
         figure = px.bar(
                     df,
+                    x='category',
+                    y='count',
                     height=200,
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
@@ -522,17 +620,21 @@ def update_dropdown(json_data):
 
 @callback(
     Output('output-map-1', 'figure'),
-    Input('dropdown-component-final', 'value'),
-    State('memory-output', 'data')
+    Input('dropdown-component-final', 'value')
 )
-def update_map(dropdown_input, state):
-    df = pd.read_json(state, orient="split")
-    df = df[df['city'].isin(dropdown_input)]
-    df_totals = get_totals(dropdown_input, state)
-    totals = df_totals['mock_results'].tolist()
-    lat = df.lat
-    lng = df.lng
-    location = df.city
+def update_map(dropdown_input):
+    l = []
+    for x in dropdown_input:
+        l.append(tuple([x]))
+
+    hashable_input = tuple(l)
+    df = get_count_map(hashable_input)
+    
+    totals = df['count']
+    lat = df['lat']
+    lng = df['lng']
+    location = df['location']
+    
     figure = px.scatter_mapbox(
                 lat=lat,
                 lon=lng,
