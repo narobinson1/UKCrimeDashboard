@@ -42,7 +42,7 @@ tab_style = {
     "fontWeight": "bold",
     "color": COLORS['general'],
     "box-shadow": "0px 1px 4px #2fa4e7",
-    "font-weight":"300"
+    "font-weight":"400"
 }
 
 tab_selected_style = {
@@ -53,7 +53,7 @@ tab_selected_style = {
     "padding": "12px",
     "fontWeight": "bold",
     "box-shadow": "0px 2px 10px #2fa4e7",
-    "font-weight":"300"
+    "font-weight":"400"
 }
 
 url_bar_and_content_div = html.Div([
@@ -304,22 +304,29 @@ behind_layout = html.Div(
                             children=[
                                 dcc.Link(
                                     children=[
-                                    html.Button(
-                                        children=['Return to dashboard'],
-                                        style={
-                                            'float':'right',
-                                            'padding':'16px',
-                                            'border':'3px solid',
-                                            'borderColor':COLORS['general'],
-                                            'background-color':COLORS['content-background'],
-                                            'color':COLORS['general'],
-                                            'font-weight':'bold',
-                                            'box-shadow':'0 0 10px #2fa4e7'
-                                        }
-                                    )],
-                                    href='/'),
-                                html.H1('UK Crime rates'),
-                            ]
+                                        html.Button(
+                                            children=['Return to dashboard'],
+                                            style={
+                                                'float':'right',
+                                                'padding':'16px',
+                                                'border':'3px solid',
+                                                'borderColor':COLORS['general'],
+                                                'background-color':COLORS['content-background'],
+                                                'color':COLORS['general'],
+                                                'font-weight':'bold',
+                                                'box-shadow':'0 0 10px #2fa4e7'
+                                            }
+                                        )
+                                    ],
+                                    href='/'
+                                ),
+                                html.Div([
+                                    html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+                                ],
+                                style={'margin-bottom':'2rem', 'color':COLORS['general']}
+                                ),
+                            ],
                         ),
                     ],
                     style={"padding":"2rem", "background-color": COLORS['content-background']}
@@ -403,11 +410,17 @@ def display_page(pathname, cache):
                                                 }
                                             )],
                                             href='/'),
-                                        html.H1('UK Crime rates'),
+                                            html.Div([
+                                                html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+                                                html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+                                            ],
+                                            style={'margin-bottom':'6rem'}
+                                            ),
+                                            html.H1('Performance statistics')
                                     ]
                                 ),
                             ],
-                            style={"padding":"2rem", "background-color": COLORS['content-background']}
+                            style={"padding":"2rem", "background-color": COLORS['content-background'], "borderBottom":"3px solid #2fa4e7", "box-shadow":"0px 6px 10px #2fa4e7"}
                         ),
                     ],
                     style=TOPBAR_STYLE
@@ -448,9 +461,10 @@ def display_page(pathname, cache):
                                     id='cache-markdown'
                                 ),
                             ],
-                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "8rem"}
                         ),
                     ],
+                    style={"padding":"40px"}
                 ),
             ],
             style={"background-color":COLORS['content-background']})
