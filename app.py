@@ -41,7 +41,8 @@ tab_style = {
     "padding": "12px",
     "fontWeight": "bold",
     "color": COLORS['general'],
-    
+    "box-shadow": "0px 1px 4px #2fa4e7",
+    "font-weight":"300"
 }
 
 tab_selected_style = {
@@ -51,6 +52,8 @@ tab_selected_style = {
     "color": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
+    "box-shadow": "0px 2px 10px #2fa4e7",
+    "font-weight":"300"
 }
 
 url_bar_and_content_div = html.Div([
@@ -180,8 +183,13 @@ dashboard_layout = html.Div(
                                     ],
                                     href='/behind'
                                 ),
-                                html.H1('UK Crime rates'),
-                                html.Div('Choose locations', id='dropdown-text')
+                                html.Div([
+                                    html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+                                ],
+                                style={'margin-bottom':'2rem'}
+                                ),
+                                html.Div('Choose locations', id='dropdown-text', style={"fontWeight":"bold"})
                             ]
                         ),
                         html.Div(
@@ -218,7 +226,7 @@ dashboard_layout = html.Div(
                                 ],
                                 id="map-loading-1")
                     ],
-                    style={"margin-bottom": 0}
+                    style={"margin-bottom": 0, "borderTop":"6px solid #2fa4e7", "box-shadow": "0px -2px 10px #2fa4e7"}
                 ),
                 html.Div(
                     children=[
