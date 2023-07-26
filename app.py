@@ -230,47 +230,87 @@ dashboard_layout = html.Div(
                 ),
                 html.Div(
                     children=[
-                        dcc.Tabs(
+                        html.Div(
                             children=[
-                                dcc.Tab(label='By Total', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                dcc.Tab(label='By Category', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                html.Div(
+                                    children=[
+                                        dcc.Tabs(
+                                            children=[
+                                                dcc.Tab(label='tabs 11', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                                dcc.Tab(label='tabs 12', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                            ],
+                                            colors={
+                                                'primary':COLORS['content-background'],
+                                                'background':COLORS['content-background']
+                                            },
+                                            value='tab-1',
+                                            id='tabs-1',
+                                        ),
+                                        dcc.Loading(
+                                            children=[
+                                                dcc.Graph(
+                                                    figure={
+                                                        'layout':{
+                                                            'height': 200,
+                                                            'autosize': True,
+                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                        }
+                                                    },
+                                                    config={'displayModeBar':False},
+                                                    id="output-graph-1"
+                                                )
+                                            ],
+                                            id="graph-loading-1",
+                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                                        )
+                                    ],
+                                    style={'border':'1px solid #2fa4e7'}
+                                )
                             ],
-                            colors={
-                                'primary':COLORS['content-background'],
-                                'background':COLORS['content-background']
-                            },
-                            value='tab-1',
-                            id='tabs-graphs',
+                            style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'20px 10px 20px 20px'}
                         ),
                         html.Div(
                             children=[
-                                dcc.Loading(
+                                html.Div(
                                     children=[
-                                        html.Div(
+                                        dcc.Tabs(
                                             children=[
-                                                html.H6('Showing results for London'),
+                                                dcc.Tab(label='tabs 21', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                                dcc.Tab(label='tabs 22', value='tab-2', style=tab_style, selected_style=tab_selected_style)
                                             ],
-                                            style={"padding-top": "2rem"},
-                                            id='results-header'
-                                        ),
-                                        dcc.Graph(
-                                            figure={
-                                                'layout':{
-                                                    'height': 200,
-                                                    'autosize': True,
-                                                    'margin': {'b':0, 'r':0, 'l':0, 't':0}
-                                                }
+                                            colors={
+                                                'primary':COLORS['content-background'],
+                                                'background':COLORS['content-background']
                                             },
-                                            config={'displayModeBar':False},
-                                            id="output-graph"
+                                            value='tab-1',
+                                            id='tabs-2',
+                                        ),
+                                        dcc.Loading(
+                                            children=[
+                                                dcc.Graph(
+                                                    figure={
+                                                        'layout':{
+                                                            'height': 200,
+                                                            'autosize': True,
+                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                        }
+                                                    },
+                                                    config={'displayModeBar':False},
+                                                    id="output-graph-2"
+                                                )
+                                            ],
+                                            id="graph-loading-2",
+                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
                                         )
                                     ],
-                                    id="graph-loading-1"
-                                )
+                                    style={'border':'1px solid #2fa4e7'}
+                                ),
                             ],
-                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                            style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'20px 20px 20px 10px'}
                         ),
+                        
                     ],
+                    
                 ),
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
             ],
@@ -475,99 +515,13 @@ def display_page(pathname, cache):
     else:
         return '404'
 
-@callback(
-    Output('output-graph', 'figure', allow_duplicate=True),
-    Output('results-header', 'children', allow_duplicate=True),
-    Output('lru-cache', 'data'),
-    Input('tabs-graphs', 'value'),
-    State('dropdown-component-final', 'value'),
-    prevent_initial_call=True
-)
-def tab_defaults(tab, dropdown_input):
-    if tab == 'tab-1':
-        l = []
-        for x in dropdown_input:
-            l.append(tuple([x]))
-        
-        hashable_input = tuple(l)
-        
-        df = get_count_graph(hashable_input)
-        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
-        
-        figure = px.bar(
-                    df,
-                    x='location',
-                    y='count',
-                    height=200,
-                    color_discrete_sequence=[COLORS['general']]*len(dropdown_input)
-        )
-        
-        figure.update_layout(
-                    autosize=True,
-                    margin={'b':0,'r':0,'l':0,'t':50},
-                    plot_bgcolor=COLORS['content-background'],
-                    paper_bgcolor=COLORS['content-background'],
-                    font={'color': COLORS['general'], 'size': 16})
-        
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        
-        header = html.H4('Showing results for chosen locations...')
-        
-        cache = []
-        cache.append(get_count_graph.cache_info())
-        cache.append(get_category.cache_info())
-        cache.append(get_count_map.cache_info())
-        
-        return figure, header, cache
-        
-    if tab == 'tab-2':
-        location = dropdown_input[0]
-        df = get_category(location)
-        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
-        
-        figure = px.bar(
-                    df,
-                    x='category',
-                    y='count',
-                    height=200,
-                    color_discrete_sequence=[COLORS['general']]*len(df)
-        )
-        
-        figure.update_layout(
-                    autosize=True,
-                    margin={'b':0,'r':0,'l':0,'t':50},
-                    plot_bgcolor=COLORS['content-background'],
-                    paper_bgcolor=COLORS['content-background'],
-                    font={'color': COLORS['top-bar-color'], 'size': 16},
-                    showlegend=False)
-                    
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        
-        header = html.H4('Showing results for {}'.format(location))
-        
-        cache = []
-        cache.append(get_count_graph.cache_info())
-        cache.append(get_category.cache_info())
-        cache.append(get_count_map.cache_info())
-        
-        return figure, header, cache
-        
     
 @callback(
-    Output('output-graph', 'figure'),
-    Output('results-header', 'children'),
+    Output('output-graph-1', 'figure'),
     Input('dropdown-component-final', 'value'),
-    Input('output-map-1', 'clickData'),
-    State('tabs-graphs', 'value')
+    State('tabs-1', 'value')
 )
-def load_tab(dropdown_input, click_data_map, tab):
-    if tab == 'tab-1' and ctx.triggered_id == 'output-map-1':
-        raise PreventUpdate
-    if tab == 'tab-2' and ctx.triggered_id == 'dropdown-component-final':
-        raise PreventUpdate
-        
+def load_tab_1(dropdown_input, tab):
     if tab == 'tab-1' and ctx.triggered_id == 'dropdown-component-final':
         l = []
         for x in dropdown_input:
@@ -582,24 +536,23 @@ def load_tab(dropdown_input, click_data_map, tab):
                     df,
                     x='location',
                     y='count',
-                    height=200,
+                    height=160,
+                    width=650,
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
                     
         figure.update_layout(
-                    autosize=True,
-                    margin={'b':0,'r':0,'l':0,'t':50},
+                    autosize=False,
+                    margin={'b':10,'r':10,'l':10,'t':10},
                     plot_bgcolor=COLORS['content-background'],
                     paper_bgcolor=COLORS['content-background'],
                     font={'color': COLORS['general'], 'size': 16})
         
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
-
-        header = html.H4('Showing results for chosen locations...')
     
-        return figure, header
+        return figure
         
-    if tab == 'tab-2' and ctx.triggered_id == 'output-map-1':
+    if tab == 'tab-2' and ctx.triggered_id == 'dropdown-component-final':
         location = click_data_map['points'][0]['hovertext']
         df = get_category(location)
         df.sort_values(axis=0, by='count', ascending=False, inplace=True)
@@ -607,12 +560,13 @@ def load_tab(dropdown_input, click_data_map, tab):
                     df,
                     x='category',
                     y='count',
-                    height=200,
+                    height=160,
+                    width=650,
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
         figure.update_layout(
                     autosize=True,
-                    margin={'b':0,'r':0,'l':0,'t':50},
+                    margin={'b':10,'r':10,'l':10,'t':10},
                     plot_bgcolor=COLORS['content-background'],
                     paper_bgcolor=COLORS['content-background'],
                     font={'color': COLORS['top-bar-color'], 'size': 16},
@@ -620,11 +574,45 @@ def load_tab(dropdown_input, click_data_map, tab):
         
         figure.update_xaxes(showticklabels=False, title_text="")
         figure.update_yaxes(showticklabels=False, title_text="")
+        
+        return figure
+        
+        
+@callback(
+    Output('output-graph-2', 'figure'),
+    Input('output-map-1', 'clickData'),
+    State('tabs-2', 'value')
+)
+def load_tab_2(click_data_map, tab):
+    if ctx.triggered_id != 'output-map-1':
+        location='London'
+    elif ctx.triggered_id == 'output-map-1':
+        location = click_data_map['points'][0]['hovertext']
 
-        header = html.H4('Showing results for {}'.format(location))
-        
-        return figure, header
-        
+    df = get_category(location)
+    df.sort_values(axis=0, by='count', ascending=False, inplace=True)
+
+    figure = px.bar(
+                df,
+                x='category',
+                y='count',
+                height=160,
+                width=650,
+                color_discrete_sequence=[COLORS['general']]*len(df)
+    )
+    figure.update_layout(
+                autosize=True,
+                margin={'b':10,'r':10,'l':10,'t':10},
+                plot_bgcolor=COLORS['content-background'],
+                paper_bgcolor=COLORS['content-background'],
+                font={'color': COLORS['top-bar-color'], 'size': 16},
+                showlegend=False)
+    
+    figure.update_xaxes(showticklabels=False, title_text="")
+    figure.update_yaxes(showticklabels=False, title_text="")
+    
+    return figure
+    
     
 
 @callback(
