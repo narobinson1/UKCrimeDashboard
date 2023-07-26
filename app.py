@@ -41,7 +41,6 @@ tab_style = {
     "padding": "12px",
     "fontWeight": "bold",
     "color": COLORS['general'],
-    "box-shadow": "0px 1px 4px #2fa4e7",
     "font-weight":"400"
 }
 
@@ -52,7 +51,6 @@ tab_selected_style = {
     "color": COLORS['general'],
     "padding": "12px",
     "fontWeight": "bold",
-    "box-shadow": "0px 2px 10px #2fa4e7",
     "font-weight":"400"
 }
 
@@ -213,105 +211,141 @@ dashboard_layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                            dcc.Loading(
-                                children=[
-                                    dcc.Graph(
-                                        figure={
-                                            'layout':{
-                                                'height': 320
-                                            }
-                                        },
-                                        config={'displayModeBar':False, 'autosizable':True},
-                                        id="output-map-1")
-                                ],
-                                id="map-loading-1")
-                    ],
-                    style={"margin-bottom": 0, "borderTop":"6px solid #2fa4e7", "box-shadow": "0px -2px 10px #2fa4e7"}
-                ),
-                html.Div(
-                    children=[
+                        html.Div(
+                            children=[
+                                #start children
+                                html.Div(
+                                    children=[
+                                            dcc.Loading(
+                                                children=[
+                                                    dcc.Graph(
+                                                        figure={
+                                                            'layout':{
+                                                                'height': 320
+                                                            }
+                                                        },
+                                                        config={'displayModeBar':False, 'autosizable':True},
+                                                        id="output-map-1")
+                                                ],
+                                                id="map-loading-1"
+                                            )
+                                    ],
+                                    # Parent div map loading style
+                                    style={"border":"1px solid #2fa4e7"}
+                                ),
+
+                                
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            children=[
+                                                html.Div(
+                                                    children=[
+                                                        dcc.Tabs(
+                                                            children=[
+                                                                dcc.Tab(label='tabs 11', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                                                dcc.Tab(label='tabs 12', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                                            ],
+                                                            colors={
+                                                                'primary':COLORS['content-background'],
+                                                                'background':COLORS['content-background']
+                                                            },
+                                                            value='tab-1',
+                                                            id='tabs-1',
+                                                        ),
+                                                        dcc.Loading(
+                                                            children=[
+                                                                dcc.Graph(
+                                                                    figure={
+                                                                        'layout':{
+                                                                            'height': 200,
+                                                                            'autosize': True,
+                                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                                        }
+                                                                    },
+                                                                    config={'displayModeBar':False},
+                                                                    id="output-graph-1"
+                                                                )
+                                                            ],
+                                                            id="graph-loading-1",
+                                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                                                        )
+                                                    ],
+                                                    style={'border':'1px solid #2fa4e7'}
+                                                )
+                                            ],
+                                            style={"width":"50%", 'display':'inline-block', 'padding':'18px 10px 0px 0px'}
+                                        ),
+                                        html.Div(
+                                            children=[
+                                                html.Div(
+                                                    children=[
+                                                        dcc.Tabs(
+                                                            children=[
+                                                                dcc.Tab(label='tabs 21', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+                                                                dcc.Tab(label='tabs 22', value='tab-2', style=tab_style, selected_style=tab_selected_style)
+                                                            ],
+                                                            colors={
+                                                                'primary':COLORS['content-background'],
+                                                                'background':COLORS['content-background']
+                                                            },
+                                                            value='tab-1',
+                                                            id='tabs-2',
+                                                        ),
+                                                        dcc.Loading(
+                                                            children=[
+                                                                dcc.Graph(
+                                                                    figure={
+                                                                        'layout':{
+                                                                            'height': 200,
+                                                                            'autosize': True,
+                                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                                        }
+                                                                    },
+                                                                    config={'displayModeBar':False},
+                                                                    id="output-graph-2"
+                                                                )
+                                                            ],
+                                                            id="graph-loading-2",
+                                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                                                        )
+                                                    ],
+                                                    style={'border':'1px solid #2fa4e7'}
+                                                ),
+                                            ],
+                                            style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'18px 0px 0px 10px'}
+                                        ),
+                                    ],
+                                    
+                                ),
+                                #end children
+                            ],
+                            style={'width': '70%', 'display':'inline-block'}
+                        ),
                         html.Div(
                             children=[
                                 html.Div(
-                                    children=[
-                                        dcc.Tabs(
-                                            children=[
-                                                dcc.Tab(label='tabs 11', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                                dcc.Tab(label='tabs 12', value='tab-2', style=tab_style, selected_style=tab_selected_style)
-                                            ],
-                                            colors={
-                                                'primary':COLORS['content-background'],
-                                                'background':COLORS['content-background']
-                                            },
-                                            value='tab-1',
-                                            id='tabs-1',
-                                        ),
-                                        dcc.Loading(
-                                            children=[
-                                                dcc.Graph(
-                                                    figure={
-                                                        'layout':{
-                                                            'height': 200,
-                                                            'autosize': True,
-                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
-                                                        }
-                                                    },
-                                                    config={'displayModeBar':False},
-                                                    id="output-graph-1"
-                                                )
-                                            ],
-                                            id="graph-loading-1",
-                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
-                                        )
-                                    ],
-                                    style={'border':'1px solid #2fa4e7'}
+                                        children=[
+                                            #start children
+                                            html.Div(
+                                                children=[
+                                                    html.H1('Controller')
+                                                ],
+                                                style={"padding":"20px"}
+                                            )
+                                            #end children
+                                        ],
+                                        style={'border':'1px solid #2fa4e7', 'height':'68vh'}
                                 )
                             ],
-                            style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'20px 10px 20px 20px'}
+                            style={'width':'30%', 'display':'inline-block', 'background-color':COLORS['content-background'], 'float':'right', 'padding': '0px 0px 0px 18px', 'height':'68vh'}
+
                         ),
-                        html.Div(
-                            children=[
-                                html.Div(
-                                    children=[
-                                        dcc.Tabs(
-                                            children=[
-                                                dcc.Tab(label='tabs 21', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                                dcc.Tab(label='tabs 22', value='tab-2', style=tab_style, selected_style=tab_selected_style)
-                                            ],
-                                            colors={
-                                                'primary':COLORS['content-background'],
-                                                'background':COLORS['content-background']
-                                            },
-                                            value='tab-1',
-                                            id='tabs-2',
-                                        ),
-                                        dcc.Loading(
-                                            children=[
-                                                dcc.Graph(
-                                                    figure={
-                                                        'layout':{
-                                                            'height': 200,
-                                                            'autosize': True,
-                                                            'margin': {'b':0, 'r':0, 'l':0, 't':0}
-                                                        }
-                                                    },
-                                                    config={'displayModeBar':False},
-                                                    id="output-graph-2"
-                                                )
-                                            ],
-                                            id="graph-loading-2",
-                                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
-                                        )
-                                    ],
-                                    style={'border':'1px solid #2fa4e7'}
-                                ),
-                            ],
-                            style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'20px 20px 20px 10px'}
-                        ),
-                        
                     ],
-                    
-                ),
+                    style={'padding':'20px'}
+                ), # parent div
+                
+                
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
             ],
             style=CONTENT_STYLE
@@ -537,7 +571,7 @@ def load_tab_1(dropdown_input, tab):
                     x='location',
                     y='count',
                     height=160,
-                    width=650,
+                    width=400,
                     color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
                     
         figure.update_layout(
@@ -561,7 +595,7 @@ def load_tab_1(dropdown_input, tab):
                     x='category',
                     y='count',
                     height=160,
-                    width=650,
+                    width=400,
                     color_discrete_sequence=[COLORS['general']]*len(df)
         )
         figure.update_layout(
@@ -597,7 +631,7 @@ def load_tab_2(click_data_map, tab):
                 x='category',
                 y='count',
                 height=160,
-                width=650,
+                width=400,
                 color_discrete_sequence=[COLORS['general']]*len(df)
     )
     figure.update_layout(
@@ -663,8 +697,8 @@ def update_map(dropdown_input):
                 paper_bgcolor=COLORS['content-background'],
                 coloraxis_colorbar_showticklabels=False,
                 coloraxis_colorbar_title="",
-                coloraxis_colorbar_x=0.94,
-                coloraxis_colorbar_thickness=60
+                coloraxis_colorbar_x=0.90,
+                coloraxis_colorbar_thickness=70
     )
                 
     return figure
