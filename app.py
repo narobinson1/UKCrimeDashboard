@@ -329,7 +329,7 @@ dashboard_layout = html.Div(
                                             #start children
                                             html.Div(
                                                 children=[
-                                                    html.H1('Controller')
+                                                    html.H1('Controller'),
                                                 ],
                                                 style={"padding":"20px"}
                                             )
