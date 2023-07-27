@@ -1,0 +1,16 @@
+.Select-control {
+	background-color: #2a2630 !important;
+	color: #FFFFFF;
+	border: 1px solid #2fa4e7 !important;
+}
+
+.Select-menu-outer {
+	background-color: #2a2630;
+	color: #2fa4e7;
+	border: 1px solid #2fa4e7;
+}
+
+.Select-value-label {
+	color: #2fa4e7 !important;
+}
+
