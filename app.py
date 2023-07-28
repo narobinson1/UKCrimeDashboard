@@ -1,6 +1,7 @@
 # Import packages
 from dash import Dash, DiskcacheManager, CeleryManager, html, dcc, callback, Output, Input, State, ctx
 from dash.exceptions import PreventUpdate
+import dash_daq as daq
 
 import pandas as pd
 import plotly.express as px
@@ -240,10 +241,36 @@ dashboard_layout = html.Div(
                                         ),
                                         html.Div(
                                             children=[
-                                            html.H6('Date period when crimes occured'),
-
-                                            dcc.DatePickerRange(min_date_allowed=date(2022, 1, 1), max_date_allowed=date(2023, 1, 1), start_date=date(2022, 1, 1))
-
+                                                html.H6('Date period when crimes occured'),
+                                                
+                                                html.Div(
+                                                    children=[
+                                                        daq.NumericInput(
+                                                            min=1,
+                                                            max=12,
+                                                            value=1
+                                                        )
+                                                    ],
+                                                    style={'padding':'10px'}
+                                                ),
+                                                
+                                                html.Div(
+                                                    children=[
+                                                        dcc.RangeSlider(
+                                                            min=0,
+                                                            max=20,
+                                                            step=1,
+                                                            value=[5, 15],
+                                                            marks={
+                                                                0: '2000',
+                                                                1: '2001',
+                                                                2: '2002'
+                                                            }
+                                                        )
+                                                    ],
+                                                    style={'padding':'10px'}
+                                                ),
+                                                
                                             ],
                                             style={'margin-bottom':'10rem'}
                                         ),
