@@ -38,24 +38,6 @@ CONTENT_STYLE = {
     "background-color": COLORS['content-background']
 }
 
-tab_style = {
-    "borderBottom": "1px solid",
-    "borderBottomColor": COLORS['general'],
-    "padding": "12px",
-    "fontWeight": "bold",
-    "color": COLORS['general'],
-    "font-weight":"400"
-}
-
-tab_selected_style = {
-    "borderBottom": "2px solid",
-    "borderBottomColor": COLORS['general'],
-    "backgroundColor": COLORS['content-background'],
-    "color": COLORS['general'],
-    "padding": "12px",
-    "fontWeight": "bold",
-    "font-weight":"400"
-}
 
 url_bar_and_content_div = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -64,15 +46,38 @@ url_bar_and_content_div = html.Div([
 ], style={"background-color": COLORS['content-background'], "height":"100vh"})
 
 
+def date_range(start_year, start_month, end_year, end_month):
+    sy = int(start_year)
+    ey = int(end_year)
+    
+    sm = int(start_month.lstrip('0'))
+    em = int(end_month.lstrip('0'))
 
+    r = []
+    for y in range(sy, ey+1):
+        s = 1
+        e = 13
+        if y == sy:
+            s = sm
+            e = 13
+        if y == ey:
+            s = 1
+            e = em + 1
+            
+        y = str(y)
+        for m in range(s, e):
+            l = []
+            l.append(str(y))
+            l.append("-")
+            if m < 10:
+                l.append("0")
+            l.append(str(m))
+            r.append(''.join(l))
+    
+    return r
 
 # Get totals from db
-@functools.lru_cache()
-def get_count_graph(tuple_ls):
-    ls = []
-    for x in tuple_ls:
-        ls.append(list(x)[0])
-
+def get_count_graph(dropdown_input, start_year, start_month, end_year, end_month):
     cnx = mysql.connector.connect(
             user='root',
             password='rootuser',
@@ -81,24 +86,60 @@ def get_count_graph(tuple_ls):
 
     cursor = cnx.cursor()
     
-    r = tuple(ls)
-    format_strings = ','.join(['%s'] * len(r))
-    query_dropdown_data = ("SELECT * FROM dropdown_data WHERE location IN (%s)" % format_strings)
+    t = []
+    for x in dropdown_input:
+        t.append(x)
+
+    ms = date_range(start_year, start_month, end_year, end_month)
+    for x in ms:
+        t.append(x)
     
-    cursor.execute(query_dropdown_data, r)
+    t = tuple(t)
+    format_locations = ','.join(['%s'] * len(dropdown_input))
+    format_dates = ','.join(['%s'] * len(ms))
+    query_dropdown_data = ("SELECT location, total, fractional, month FROM dropdown_data WHERE location IN (%s) AND month IN (%s)" % (format_locations, format_dates))
+
+    cursor.execute(query_dropdown_data, t)
 
     l = []
-    c = []
-    for (hash, location, lat, lng, count) in cursor:
+    t = []
+    f = []
+    m = []
+    for (location, total, fractional, month) in cursor:
         l.append(location)
-        c.append(int(count))
+        t.append(total)
+        f.append(fractional)
+        m.append(month)
 
-    d = {'location':l, 'count':c}
+    d = {'location':l, 'total':t, 'fractional':f, 'month':m}
     df = pd.DataFrame(d)
+    
+    
+    l_ = []
+    s = []
+    f = []
+    for location in set(l):
+        l_.append(location)
+        x = list(df[df['location'] == location]['total'])
+        s_ = 0
+        for i in x:
+            s_ += int(i)
+        s.append(s_)
+        
+        x = list(df[df['location'] == location]['fractional'])
+        s_ = 0
+        for i in x:
+            s_ += float(i)
+        f.append(s_)
+        
+        
+    
+    d = {'location':l_, 'total':s, 'fractional':f}
+    df = pd.DataFrame(d)
+    
     return df
     
 # Get statistics from db
-@functools.lru_cache()
 def get_category(l):
     cnx = mysql.connector.connect(
             user='root',
@@ -122,12 +163,7 @@ def get_category(l):
     return df
     
 # Get statistics from db
-@functools.lru_cache()
-def get_count_map(tuple_ls):
-    ls = []
-    for x in tuple_ls:
-        ls.append(list(x)[0])
-        
+def get_count_map(ls):
     cnx = mysql.connector.connect(
             user='root',
             password='rootuser',
@@ -227,7 +263,7 @@ dashboard_layout = html.Div(
                                                     ###### Dashboard configuration
                                                 ''')
                                             ],
-                                            style={'font-weight':'100', 'margin-bottom':'6rem'}
+                                            style={'font-weight':'100', 'margin-bottom':'2rem'}
                                         ),
                                         html.Div(
                                             children=[
@@ -235,7 +271,9 @@ dashboard_layout = html.Div(
                                                 dcc.Dropdown(
                                                     options=[{"label": x, "value": x} for x in ['Total', 'Fractional']],
                                                     value='Total',
-                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7'}, ),
+                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7'},
+                                                    id='dropdown-stat-type'
+                                                ),
                                             ],
                                             style={'margin-bottom':'2rem'}
                                         ),
@@ -245,54 +283,78 @@ dashboard_layout = html.Div(
                                                 
                                                 html.Div(
                                                     children=[
-                                                        daq.NumericInput(
-                                                            min=1,
-                                                            max=12,
-                                                            value=1
-                                                        )
-                                                    ],
-                                                    style={'padding':'10px'}
+                                                        html.Div(
+                                                            children=[
+                                                                dcc.Dropdown(
+                                                                    options=[{"label": str(x), "value": str(x)} for x in range(2000, 2024)],
+                                                                    value='2023',
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '5px', 'margin-bottom': '5px'},
+                                                                    placeholder='Start year',
+                                                                    id='dropdown-start-year'
+                                                                ),
+                                                                dcc.Dropdown(
+                                                                    options=[{"label": str(x), "value": str(x)} for x in range(1, 13)],
+                                                                    value='1',
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem'},
+                                                                    placeholder='Start month',
+                                                                    id='dropdown-start-month'
+                                                                )
+                                                            ],
+                                                            style={'display':'inline-block', 'padding':'20px'}
+                                                        ),
+                                                        html.Div(
+                                                            children=[
+                                                                'arrow'
+                                                            ],
+                                                            style={'display':'inline-block'}
+                                                        ),
+                                                        html.Div(
+                                                            children=[
+                                                                dcc.Dropdown(
+                                                                    options=[{"label": x, "value": x} for x in range(2000, 2024)],
+                                                                    value='2023',
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '5px', 'margin-bottom': '5px'},
+                                                                    placeholder='End year',
+                                                                    id='dropdown-end-year'
+                                                                ),
+                                                                dcc.Dropdown(
+                                                                    options=[{"label": x, "value": x} for x in range(1, 13)],
+                                                                    value='12',
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem'},
+                                                                    placeholder='End month',
+                                                                    id='dropdown-end-month'
+                                                                )
+                                                            ],
+                                                            style={'display':'inline-block', 'padding':'20px'}
+                                                        ),
+                                                        
+                                                        
+                                                    ]
                                                 ),
-                                                
-                                                html.Div(
-                                                    children=[
-                                                        dcc.RangeSlider(
-                                                            min=0,
-                                                            max=20,
-                                                            step=1,
-                                                            value=[5, 15],
-                                                            marks={
-                                                                0: '2000',
-                                                                1: '2001',
-                                                                2: '2002'
-                                                            }
-                                                        )
-                                                    ],
-                                                    style={'padding':'10px'}
-                                                ),
-                                                
+                                                dcc.Markdown(id='date-markdown', style={"padding":"20px", 'font-weight': '100', 'font-size': '22px'})
+            
                                             ],
-                                            style={'margin-bottom':'10rem'}
+                                            style={'margin-bottom':'0rem'}
                                         ),
                                         html.Div(
                                             children=[
                                                 dcc.Markdown('''
                                                     ###### Data provider
                                                     
-                                                    The data used for this project was acquired through the UK gov crime API.
+                                                    The data used for this project was acquired through the uk.gov Police API.
                                                 ''')
                                             ],
-                                            style={'font-weight':'100', 'margin-bottom':'2rem'}
+                                            style={'font-weight':'100'}
                                             
                                         )
                                         
                                     ],
-                                    style={"padding":"20px", 'color':COLORS['general']}
+                                    style={'color':COLORS['general']}
                                 )
                                 
                                 #end children
                             ],
-                            style={'width': '30%', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'height':'68vh'}
+                            style={'width': '30%', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'height':'68vh', 'padding':'20px'}
                         ),
                         html.Div(
                             children=[
@@ -326,18 +388,6 @@ dashboard_layout = html.Div(
                                                 children=[
                                                     html.Div(
                                                         children=[
-                                                            dcc.Tabs(
-                                                                children=[
-                                                                    dcc.Tab(label='tabs 11', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                                                    dcc.Tab(label='tabs 12', value='tab-2', style=tab_style, selected_style=tab_selected_style)
-                                                                ],
-                                                                colors={
-                                                                    'primary':COLORS['content-background'],
-                                                                    'background':COLORS['content-background']
-                                                                },
-                                                                value='tab-1',
-                                                                id='tabs-1',
-                                                            ),
                                                             dcc.Loading(
                                                                 children=[
                                                                     dcc.Graph(
@@ -356,27 +406,14 @@ dashboard_layout = html.Div(
                                                                 style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
                                                             )
                                                         ],
-                                                        style={'border':'1px solid #2fa4e7'}
                                                     )
                                                 ],
-                                                style={"width":"50%", 'display':'inline-block', 'padding':'18px 10px 0px 0px'}
+                                                style={"width":"50%", 'margin-left':'0', 'display':'inline-block', 'padding':'20px 20px 20px 20px', 'border':'1px solid #2fa4e7'}
                                             ),
                                             html.Div(
                                                 children=[
                                                     html.Div(
                                                         children=[
-                                                            dcc.Tabs(
-                                                                children=[
-                                                                    dcc.Tab(label='tabs 21', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-                                                                    dcc.Tab(label='tabs 22', value='tab-2', style=tab_style, selected_style=tab_selected_style)
-                                                                ],
-                                                                colors={
-                                                                    'primary':COLORS['content-background'],
-                                                                    'background':COLORS['content-background']
-                                                                },
-                                                                value='tab-1',
-                                                                id='tabs-2',
-                                                            ),
                                                             dcc.Loading(
                                                                 children=[
                                                                     dcc.Graph(
@@ -620,72 +657,55 @@ def display_page(pathname, cache):
     
 @callback(
     Output('output-graph-1', 'figure'),
+    Output('date-markdown', 'children'),
     Input('dropdown-component-final', 'value'),
-    State('tabs-1', 'value')
+    Input('dropdown-stat-type', 'value'),
+    Input('dropdown-start-year', 'value'),
+    Input('dropdown-start-month', 'value'),
+    Input('dropdown-end-year', 'value'),
+    Input('dropdown-end-month', 'value')
 )
-def load_tab_1(dropdown_input, tab):
-    if tab == 'tab-1' and ctx.triggered_id == 'dropdown-component-final':
-        l = []
-        for x in dropdown_input:
-            l.append(tuple([x]))
-        
-        hashable_input = tuple(l)
-        
-        df = get_count_graph(hashable_input)
-        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
-        
-        figure = px.bar(
-                    df,
-                    x='location',
-                    y='count',
-                    height=160,
-                    width=400,
-                    color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
-                    
-        figure.update_layout(
-                    autosize=False,
-                    margin={'b':10,'r':10,'l':10,'t':10},
-                    plot_bgcolor=COLORS['content-background'],
-                    paper_bgcolor=COLORS['content-background'],
-                    font={'color': COLORS['general'], 'size': 16})
-        
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
+def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year, end_month):
+    df = get_count_graph(dropdown_input, start_year, start_month, end_year, end_month)
+    df.sort_values(axis=0, by='total', ascending=False, inplace=True)
     
-        return figure
+    
+    if stat_type == 'Total':
+        stat = 'total'
+    if stat_type == 'Fractional':
+        stat = 'fractional'
         
-    if tab == 'tab-2' and ctx.triggered_id == 'dropdown-component-final':
-        location = click_data_map['points'][0]['hovertext']
-        df = get_category(location)
-        df.sort_values(axis=0, by='count', ascending=False, inplace=True)
-        figure = px.bar(
-                    df,
-                    x='category',
-                    y='count',
-                    height=160,
-                    width=400,
-                    color_discrete_sequence=[COLORS['general']]*len(df)
-        )
-        figure.update_layout(
-                    autosize=True,
-                    margin={'b':10,'r':10,'l':10,'t':10},
-                    plot_bgcolor=COLORS['content-background'],
-                    paper_bgcolor=COLORS['content-background'],
-                    font={'color': COLORS['top-bar-color'], 'size': 16},
-                    showlegend=False)
+    figure = px.bar(
+                df,
+                x='location',
+                y=stat,
+                height=160,
+                width=400,
+                color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
+                
+    figure.update_layout(
+                autosize=False,
+                margin={'b':10,'r':10,'l':10,'t':10},
+                plot_bgcolor=COLORS['content-background'],
+                paper_bgcolor=COLORS['content-background'],
+                font={'color': COLORS['general'], 'size': 10})
+    
+    figure.update_xaxes(showticklabels=False, title_text=stat)
+    figure.update_yaxes(showticklabels=False, title_text="{} count per location".format(stat))
+
+    d = {'1':'January', '2':'February', '3':'March', '4':'April', '5':'May', '6':'June', '7':'July', '8':'August', '9':'September', '10':'October', '11':'November', '12':'December'}
+    md = '''
+            > Showing statistic '{}' from {} {} until {} {}
+        '''.format(stat, d[start_month], start_year, d[end_month], end_year)
         
-        figure.update_xaxes(showticklabels=False, title_text="")
-        figure.update_yaxes(showticklabels=False, title_text="")
-        
-        return figure
-        
+    return figure, md
+    
         
 @callback(
     Output('output-graph-2', 'figure'),
-    Input('output-map-1', 'clickData'),
-    State('tabs-2', 'value')
+    Input('output-map-1', 'clickData')
 )
-def load_tab_2(click_data_map, tab):
+def update_category(click_data_map):
     if ctx.triggered_id != 'output-map-1':
         location='London'
     elif ctx.triggered_id == 'output-map-1':

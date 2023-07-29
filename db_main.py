@@ -3,10 +3,8 @@ import requests
 import hashlib
 import mysql.connector
 
-locations = ['London', 'Manchester']
 df = pd.read_csv("gb_latlon.csv")
-
-
+locations = list(df['city'])[:10]
 
 
 d = []
@@ -67,7 +65,6 @@ def store_cleaned_data(locations):
 
                     p_key = hashlib.sha256(s.encode()).hexdigest()
                     input.insert(0, p_key)
-                    print(tuple(input))
                     r.append(tuple(input))
                 
         return r
@@ -125,7 +122,6 @@ def store_category_data(locations):
 
                     
                     for i in range(len(df_)):
-                        print(type(t), type(p))
 
                         t = df_['category'][i]
                         f = t/p
