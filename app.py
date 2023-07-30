@@ -140,7 +140,7 @@ def get_count_graph(dropdown_input, start_year, start_month, end_year, end_month
     return df
     
 # Get statistics from db
-def get_category(l):
+def get_category(location, start_year, start_month, end_year, end_month):
     cnx = mysql.connector.connect(
             user='root',
             password='rootuser',
@@ -148,52 +148,150 @@ def get_category(l):
             database='ukgovcrime')
 
     cursor = cnx.cursor()
-    query_category_data = ("SELECT * FROM category_data WHERE location IN (%s)")
-    r = tuple([l])
-    cursor.execute(query_category_data, r)
 
-    ca = []
-    c = []
-    for (hash, location, category, count) in cursor:
-        ca.append(category)
-        c.append(int(count))
-
-    d = {'category':ca, 'count':c}
-    df = pd.DataFrame(d)
-    return df
+    t = []
     
-# Get statistics from db
-def get_count_map(ls):
-    cnx = mysql.connector.connect(
-            user='root',
-            password='rootuser',
-            host='127.0.0.1',
-            database='ukgovcrime')
-
-    cursor = cnx.cursor()
+    t.append(location)
+    ms = date_range(start_year, start_month, end_year, end_month)
+    for x in ms:
+        t.append(x)
     
-    r = tuple(ls)
-    format_strings = ','.join(['%s'] * len(r))
-    query_dropdown_data = ("SELECT * FROM dropdown_data WHERE location IN (%s)" % format_strings)
-
-    cursor.execute(query_dropdown_data, r)
+    t = tuple(t)
+    format_location = ','.join(['%s'])
+    format_dates = ','.join(['%s'] * len(ms))
+    query_dropdown_data = ("SELECT location, category, total, fractional, month FROM category_data WHERE location = (%s) AND month IN (%s)" % (format_location, format_dates))
+    print(query_dropdown_data)
+    cursor.execute(query_dropdown_data, t)
 
     l = []
-    la = []
-    lg = []
     c = []
-    
-    for (hash, location, lat, lng, count) in cursor:
+    t = []
+    f = []
+    m = []
+    for (location, category, total, fractional, month) in cursor:
         l.append(location)
-        la.append(float(lat))
-        lg.append(float(lng))
-        c.append(int(count))
+        c.append(category)
+        t.append(total)
+        f.append(fractional)
+        m.append(month)
+
+    d = {'location':l, 'category':c, 'total':t, 'fractional':f, 'month':m}
+    df = pd.DataFrame(d)
+    
+    
+    l_ = location
+    cn_ = []
+    ct_ = []
 
     
-    d = {'location':l, 'lat':la, 'lng':lg, 'count':c}
+    s = []
+    f = []
+    
+    for category in set(c):
+        cn_.append(category)
+        
+        x = df[df['location'] == location]
+        x = list(x[x['category'] == category]['total'])
+        
+        s_ = 0
+        for i in x:
+            s_ += int(i)
+        ct_.append(s_)
+        
+        
+    ct = []
+    for q in ct_:
+        q = q / sum(ct_)
+        ct.append(q)
+        
+    
+        
+    
+    d = {'category':cn_, 'ratio':ct}
     df = pd.DataFrame(d)
+    
     return df
 
+    
+# Get statistics from db
+def get_count_map(dropdown_input, start_year, start_month, end_year, end_month):
+    cnx = mysql.connector.connect(
+            user='root',
+            password='rootuser',
+            host='127.0.0.1',
+            database='ukgovcrime')
+
+    cursor = cnx.cursor()
+    
+    t = []
+    for x in dropdown_input:
+        t.append(x)
+
+    ms = date_range(start_year, start_month, end_year, end_month)
+    for x in ms:
+        t.append(x)
+    
+    t = tuple(t)
+    format_locations = ','.join(['%s'] * len(dropdown_input))
+    format_dates = ','.join(['%s'] * len(ms))
+    query_dropdown_data = ("SELECT location, total, fractional, lat, lng, month FROM dropdown_data WHERE location IN (%s) AND month IN (%s)" % (format_locations, format_dates))
+
+    cursor.execute(query_dropdown_data, t)
+
+    l = []
+    coords = []
+    t = []
+    f = []
+    m = []
+    
+    for (location, total, fractional, lat, lng, month) in cursor:
+        l.append(location)
+        coords.append([lat, lng])
+        t.append(total)
+        f.append(fractional)
+        m.append(month)
+
+    d = {'location':l, 'total':t, 'fractional':f, 'month':m}
+    df = pd.DataFrame(d)
+    
+    
+    z = dict()
+
+    for i in range(len(l)):
+        if l[i] not in list(d):
+            z[l[i]] = coords[i]
+            
+    l_ = []
+    la = []
+    ln = []
+    s = []
+    f = []
+
+    for x in l:
+        if x not in l_:
+            l_.append(x)
+            la.append(float(z[x][0]))
+            ln.append(float(z[x][1]))
+
+    for location in l_:
+        x = list(df[df['location'] == location]['total'])
+        s_ = 0
+        for i in x:
+            s_ += int(i)
+        s.append(s_)
+        
+        x = list(df[df['location'] == location]['fractional'])
+        s_ = 0
+        for i in x:
+            s_ += float(i)
+        f.append(s_)
+        
+
+    
+    d = {'location':l_, 'lat':la, 'lng':ln, 'total':s, 'fractional':f}
+    df = pd.DataFrame(d)
+
+    return df
 
 dashboard_layout = html.Div(
     children=[
@@ -388,55 +486,67 @@ dashboard_layout = html.Div(
                                                 children=[
                                                     html.Div(
                                                         children=[
-                                                            dcc.Loading(
+                                                            html.Div(
                                                                 children=[
-                                                                    dcc.Graph(
-                                                                        figure={
-                                                                            'layout':{
-                                                                                'height': 200,
-                                                                                'autosize': True,
-                                                                                'margin': {'b':0, 'r':0, 'l':0, 't':0}
-                                                                            }
-                                                                        },
-                                                                        config={'displayModeBar':False},
-                                                                        id="output-graph-1"
+                                                                    dcc.Loading(
+                                                                        children=[
+                                                                            dcc.Graph(
+                                                                                figure={
+                                                                                    'layout':{
+                                                                                        'height': 200,
+                                                                                        'autosize': True,
+                                                                                        'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                                                    }
+                                                                                },
+                                                                                config={'displayModeBar':False},
+                                                                                id="output-graph-1"
+                                                                            )
+                                                                        ],
+                                                                        id="graph-loading-1",
+                                                                        style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
                                                                     )
                                                                 ],
-                                                                id="graph-loading-1",
-                                                                style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
                                                             )
                                                         ],
-                                                    )
+                                                        style={"width":"50%", 'padding':'20px 20px 20px 20px'}
+                                                    ),
                                                 ],
-                                                style={"width":"50%", 'margin-left':'0', 'display':'inline-block', 'padding':'20px 20px 20px 20px', 'border':'1px solid #2fa4e7'}
+                                                style={'margin-top':'1rem', 'padding':'6px 0px 6px 30px', 'display':'inline-block', 'border':'1px solid #2fa4e7'}
                                             ),
+                                                    
                                             html.Div(
                                                 children=[
                                                     html.Div(
                                                         children=[
-                                                            dcc.Loading(
+                                                            html.Div(
                                                                 children=[
-                                                                    dcc.Graph(
-                                                                        figure={
-                                                                            'layout':{
-                                                                                'height': 200,
-                                                                                'autosize': True,
-                                                                                'margin': {'b':0, 'r':0, 'l':0, 't':0}
-                                                                            }
-                                                                        },
-                                                                        config={'displayModeBar':False},
-                                                                        id="output-graph-2"
-                                                                    )
+                                                                    dcc.Loading(
+                                                                        children=[
+                                                                            dcc.Graph(
+                                                                                figure={
+                                                                                    'layout':{
+                                                                                        'height': 200,
+                                                                                        'autosize': True,
+                                                                                        'margin': {'b':0, 'r':0, 'l':0, 't':0}
+                                                                                    }
+                                                                                },
+                                                                                config={'displayModeBar':False},
+                                                                                id="output-graph-2"
+                                                                            )
+                                                                        ],
+                                                                        id="graph-loading-2",
+                                                                        style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+                                                                    ),
+                                                                    dcc.Store(id='graph-2-location-store', data='London')
                                                                 ],
-                                                                id="graph-loading-2",
-                                                                style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
-                                                            )
+                                                            ),
                                                         ],
-                                                        style={'border':'1px solid #2fa4e7'}
+                                                        style={"width":"50%", 'padding':'20px 20px 20px 20px'}
                                                     ),
                                                 ],
-                                                style={"width":"50%", 'margin-right':'0', 'top':'0', 'display':'inline-block', 'padding':'18px 0px 0px 10px'}
-                                            ),
+                                                style={'margin-top': '1rem', 'padding':'6px 30px 6px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'float':'right'}
+                                            )
+                                                    
                                         ],
                                     
                                     ),
@@ -703,21 +813,29 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
         
 @callback(
     Output('output-graph-2', 'figure'),
-    Input('output-map-1', 'clickData')
+    Output('graph-2-location-store', 'data'),
+    Input('output-map-1', 'clickData'),
+    Input('dropdown-start-year', 'value'),
+    Input('dropdown-start-month', 'value'),
+    Input('dropdown-end-year', 'value'),
+    Input('dropdown-end-month', 'value'),
+    State('graph-2-location-store', 'data')
 )
-def update_category(click_data_map):
-    if ctx.triggered_id != 'output-map-1':
-        location='London'
-    elif ctx.triggered_id == 'output-map-1':
+def update_category(click_data_map, start_year, start_month, end_year, end_month, location):
+    location = location
+    update_store = location
+    if ctx.triggered_id == 'output-map-1':
         location = click_data_map['points'][0]['hovertext']
+        update_store = location
+        
+    
 
-    df = get_category(location)
-    df.sort_values(axis=0, by='count', ascending=False, inplace=True)
+    df = get_category(location, start_year, start_month, end_year, end_month)
 
     figure = px.bar(
                 df,
                 x='category',
-                y='count',
+                y='ratio',
                 height=160,
                 width=400,
                 color_discrete_sequence=[COLORS['general']]*len(df)
@@ -733,7 +851,7 @@ def update_category(click_data_map):
     figure.update_xaxes(showticklabels=False, title_text="")
     figure.update_yaxes(showticklabels=False, title_text="")
     
-    return figure
+    return figure, update_store
     
     
 
@@ -752,27 +870,28 @@ def update_dropdown(json_data):
 
 @callback(
     Output('output-map-1', 'figure'),
-    Input('dropdown-component-final', 'value')
+    Input('dropdown-component-final', 'value'),
+    Input('dropdown-stat-type', 'value'),
+    Input('dropdown-start-year', 'value'),
+    Input('dropdown-start-month', 'value'),
+    Input('dropdown-end-year', 'value'),
+    Input('dropdown-end-month', 'value')
+    
 )
-def update_map(dropdown_input):
-    l = []
-    for x in dropdown_input:
-        l.append(tuple([x]))
-
-    hashable_input = tuple(l)
-    df = get_count_map(hashable_input)
+def update_map(dropdown_input, stat_type, start_year, start_month, end_year, end_month):
+    df = get_count_map(dropdown_input, start_year, start_month, end_year, end_month)
     
-    totals = df['count']
-    lat = df['lat']
-    lng = df['lng']
-    location = df['location']
-    
-    figure = px.scatter_mapbox(
-                lat=lat,
-                lon=lng,
-                color=totals,
-                size=totals,
-                hover_name=location,
+    if stat_type == 'Total':
+        stat = 'total'
+    if stat_type == 'Fractional':
+        stat = 'fractional'
+        
+    figure = px.scatter_mapbox(df,
+                lat='lat',
+                lon='lng',
+                color=stat,
+                size=stat,
+                hover_name='location',
                 color_continuous_scale=px.colors.sequential.Blues,
                 zoom=5,
                 height=320
