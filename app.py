@@ -301,27 +301,20 @@ dashboard_layout = html.Div(
                     children=[
                         html.Div(
                             children=[
-                                dcc.Link(
+                                html.A(
                                     children=[
-                                        html.Button(
-                                            children=['Performance statistics'],
-                                            style={
-                                                'float':'right',
-                                                'padding':'16px',
-                                                'border':'3px solid',
-                                                'borderColor':COLORS['general'],
-                                                'background-color':COLORS['content-background'],
-                                                'color':COLORS['general'],
-                                                'font-weight':'bold',
-                                                'box-shadow':'0 0 10px #2fa4e7'
-                                            }
-                                        )
+                                        
+                                        html.Img(src='assets/github.png', id='github-logo', height=70, style={'display':'inline', 'float':'right'})
+#
                                     ],
-                                    href='/behind'
+                                    href='https://github.com/narobinson1',
+                                    target='_blank'
                                 ),
                                 html.Div([
                                     html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
+                                    
+                                    
                                 ],
                                 style={'padding-bottom':'2.4rem'}
                                 ),
@@ -402,7 +395,7 @@ dashboard_layout = html.Div(
                                                         ),
                                                         html.Div(
                                                             children=[
-                                                                'arrow'
+                                                                html.Img(src='assets/arrow.png', height=30, style={'display':'inline', 'position':'relative', 'bottom':'54px'})
                                                             ],
                                                             style={'display':'inline-block'}
                                                         ),
@@ -583,71 +576,71 @@ dashboard_layout = html.Div(
 
 
 
-behind_layout = html.Div(
-    children=[
-        html.Div(
-            children=[
-                html.Div(
-                    children=[
-                        html.Div(
-                            children=[
-                                dcc.Link(
-                                    children=[
-                                        html.Button(
-                                            children=['Return to dashboard'],
-                                            style={
-                                                'float':'right',
-                                                'padding':'16px',
-                                                'border':'3px solid',
-                                                'borderColor':COLORS['general'],
-                                                'background-color':COLORS['content-background'],
-                                                'color':COLORS['general'],
-                                                'font-weight':'bold',
-                                                'box-shadow':'0 0 10px #2fa4e7'
-                                            }
-                                        )
-                                    ],
-                                    href='/'
-                                ),
-                                html.Div([
-                                    html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
-                                ],
-                                style={'margin-bottom':'2rem', 'color':COLORS['general']}
-                                ),
-                            ],
-                        ),
-                    ],
-                    style={"padding":"2rem", "background-color": COLORS['content-background']}
-                ),
-            ],
-            style=TOPBAR_STYLE
-        ),
-        
-        html.Div(
-            children=[
-                html.Div(
-                    children=[
-                        dcc.Markdown(
-                            children=[
-                            
-                            ],
-                            style={'color':COLORS['general']},
-                            id='cache-markdown'
-                        ),
-                    ],
-                    style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
-                ),
-            ],
-        ),
-    ],
-    style={"background-color":COLORS['content-background']})
+#behind_layout = html.Div(
+#    children=[
+#        html.Div(
+#            children=[
+#                html.Div(
+#                    children=[
+#                        html.Div(
+#                            children=[
+#                                dcc.Link(
+#                                    children=[
+#                                        html.Button(
+#                                            children=['Return to dashboard'],
+#                                            style={
+#                                                'float':'right',
+#                                                'padding':'16px',
+#                                                'border':'3px solid',
+#                                                'borderColor':COLORS['general'],
+#                                                'background-color':COLORS['content-background'],
+#                                                'color':COLORS['general'],
+#                                                'font-weight':'bold',
+#                                                'box-shadow':'0 0 10px #2fa4e7'
+#                                            }
+#                                        )
+#                                    ],
+#                                    href='/'
+#                                ),
+#                                html.Div([
+#                                    html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+#                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+#                                ],
+#                                style={'margin-bottom':'2rem', 'color':COLORS['general']}
+#                                ),
+#                            ],
+#                        ),
+#                    ],
+#                    style={"padding":"2rem", "background-color": COLORS['content-background']}
+#                ),
+#            ],
+#            style=TOPBAR_STYLE
+#        ),
+#
+#        html.Div(
+#            children=[
+#                html.Div(
+#                    children=[
+#                        dcc.Markdown(
+#                            children=[
+#
+#                            ],
+#                            style={'color':COLORS['general']},
+#                            id='cache-markdown'
+#                        ),
+#                    ],
+#                    style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "0rem"}
+#                ),
+#            ],
+#        ),
+#    ],
+#    style={"background-color":COLORS['content-background']})
     
 app.layout = url_bar_and_content_div
 
 app.validation_layout = html.Div([
     dashboard_layout,
-    behind_layout,
+#    behind_layout,
     url_bar_and_content_div,
 ])
 
@@ -659,106 +652,106 @@ app.validation_layout = html.Div([
     State('lru-cache', 'data')
 )
 def display_page(pathname, cache):
-    if pathname == '/behind':
-        
-        if cache == '':
-            location_hits, location_misses, location_currsize, map_hits, map_misses, map_currsize, category_hits, category_misses, category_currsize = '?', '?', '?', '?', '?', '?', '?', '?', '?'
-            
-        if cache != '':
-            location_hits = cache[0][0]
-            location_misses = cache[0][1]
-            location_currsize = cache[0][2]
-            map_hits = cache[0][0]
-            map_misses = cache[0][1]
-            map_currsize = cache[0][2]
-            category_hits = cache[0][0]
-            category_misses = cache[0][1]
-            category_currsize = cache[0][2]
-            
-        behind_layout = html.Div(
-            children=[
-                html.Div(
-                    children=[
-                        html.Div(
-                            children=[
-                                html.Div(
-                                    children=[
-                                        dcc.Link(
-                                            children=[
-                                            html.Button(
-                                                children=['Return to dashboard'],
-                                                style={
-                                                    'float':'right',
-                                                    'padding':'16px',
-                                                    'border':'3px solid',
-                                                    'borderColor':COLORS['general'],
-                                                    'background-color':COLORS['content-background'],
-                                                    'color':COLORS['general'],
-                                                    'font-weight':'bold',
-                                                    'box-shadow':'0 0 10px #2fa4e7'
-                                                }
-                                            )],
-                                            href='/'),
-                                            html.Div([
-                                                html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                                html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
-                                            ],
-                                            style={'margin-bottom':'6rem'}
-                                            ),
-                                            html.H1('Performance statistics')
-                                    ]
-                                ),
-                            ],
-                            style={"padding":"2rem", "background-color": COLORS['content-background'], "borderBottom":"3px solid #2fa4e7", "box-shadow":"0px 6px 10px #2fa4e7"}
-                        ),
-                    ],
-                    style=TOPBAR_STYLE
-                ),
-                
-                html.Div(
-                    children=[
-                        html.Div(
-                            children=[
-                                dcc.Markdown(
-                                    children=[
-                                        '''
-                                            ### Python
-                                            
-                                            * Functools lru_cache: data retrieval function calls with identical arguments are cached using lru_cache. The following data results from your interaction with the dashboard:
-                                                
-                                                Location cache:
-                                                
-                                                *Cache hits: {},*
-                                                *Cache misses: {},*
-                                                *Cache stores: {}*
-                                                
-                                                Category cache:
-                                                
-                                                *Cache hits: {},*
-                                                *Cache misses: {},*
-                                                *Cache stores: {}*
-                                                
-                                                Map cache:
-                                                
-                                                *Cache hits: {},*
-                                                *Cache misses: {},*
-                                                *Cache stores: {}*
-                                                
-                                        '''.format(location_hits, location_misses, location_currsize, category_hits, category_misses, category_currsize, map_hits, map_misses, map_currsize)
-                                    ],
-                                    style={'color':COLORS['general']},
-                                    id='cache-markdown'
-                                ),
-                            ],
-                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "8rem"}
-                        ),
-                    ],
-                    style={"padding":"40px"}
-                ),
-            ],
-            style={"background-color":COLORS['content-background']})
-        
-        return behind_layout
+#    if pathname == '/behind':
+#
+#        if cache == '':
+#            location_hits, location_misses, location_currsize, map_hits, map_misses, map_currsize, category_hits, category_misses, category_currsize = '?', '?', '?', '?', '?', '?', '?', '?', '?'
+#
+#        if cache != '':
+#            location_hits = cache[0][0]
+#            location_misses = cache[0][1]
+#            location_currsize = cache[0][2]
+#            map_hits = cache[0][0]
+#            map_misses = cache[0][1]
+#            map_currsize = cache[0][2]
+#            category_hits = cache[0][0]
+#            category_misses = cache[0][1]
+#            category_currsize = cache[0][2]
+#
+#        behind_layout = html.Div(
+#            children=[
+#                html.Div(
+#                    children=[
+#                        html.Div(
+#                            children=[
+#                                html.Div(
+#                                    children=[
+#                                        dcc.Link(
+#                                            children=[
+#                                            html.Button(
+#                                                children=['Return to dashboard'],
+#                                                style={
+#                                                    'float':'right',
+#                                                    'padding':'16px',
+#                                                    'border':'3px solid',
+#                                                    'borderColor':COLORS['general'],
+#                                                    'background-color':COLORS['content-background'],
+#                                                    'color':COLORS['general'],
+#                                                    'font-weight':'bold',
+#                                                    'box-shadow':'0 0 10px #2fa4e7'
+#                                                }
+#                                            )],
+#                                            href='/'),
+#                                            html.Div([
+#                                                html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+#                                                html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'})
+#                                            ],
+#                                            style={'margin-bottom':'6rem'}
+#                                            ),
+#                                            html.H1('Performance statistics')
+#                                    ]
+#                                ),
+#                            ],
+#                            style={"padding":"2rem", "background-color": COLORS['content-background'], "borderBottom":"3px solid #2fa4e7", "box-shadow":"0px 6px 10px #2fa4e7"}
+#                        ),
+#                    ],
+#                    style=TOPBAR_STYLE
+#                ),
+#
+#                html.Div(
+#                    children=[
+#                        html.Div(
+#                            children=[
+#                                dcc.Markdown(
+#                                    children=[
+#                                        '''
+#                                            ### Python
+#
+#                                            * Functools lru_cache: data retrieval function calls with identical arguments are cached using lru_cache. The following data results from your interaction with the dashboard:
+#
+#                                                Location cache:
+#
+#                                                *Cache hits: {},*
+#                                                *Cache misses: {},*
+#                                                *Cache stores: {}*
+#
+#                                                Category cache:
+#
+#                                                *Cache hits: {},*
+#                                                *Cache misses: {},*
+#                                                *Cache stores: {}*
+#
+#                                                Map cache:
+#
+#                                                *Cache hits: {},*
+#                                                *Cache misses: {},*
+#                                                *Cache stores: {}*
+#
+#                                        '''.format(location_hits, location_misses, location_currsize, category_hits, category_misses, category_currsize, map_hits, map_misses, map_currsize)
+#                                    ],
+#                                    style={'color':COLORS['general']},
+#                                    id='cache-markdown'
+#                                ),
+#                            ],
+#                            style={"padding-left": "3rem", "padding-right": "3rem", "padding-bottom": "3rem", "padding-top": "8rem"}
+#                        ),
+#                    ],
+#                    style={"padding":"40px"}
+#                ),
+#            ],
+#            style={"background-color":COLORS['content-background']})
+#
+#        return behind_layout
     if pathname == '/':
         return dashboard_layout
     else:
@@ -800,7 +793,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
                 paper_bgcolor=COLORS['content-background'],
                 font={'color': COLORS['general'], 'size': 10})
     
-    figure.update_xaxes(showticklabels=False, title_text=stat)
+    figure.update_xaxes(showticklabels=False, title_text=stat, anchor="x")
     figure.update_yaxes(showticklabels=False, title_text="{} count per location".format(stat))
 
     d = {'1':'January', '2':'February', '3':'March', '4':'April', '5':'May', '6':'June', '7':'July', '8':'August', '9':'September', '10':'October', '11':'November', '12':'December'}
@@ -845,11 +838,11 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 margin={'b':10,'r':10,'l':10,'t':10},
                 plot_bgcolor=COLORS['content-background'],
                 paper_bgcolor=COLORS['content-background'],
-                font={'color': COLORS['top-bar-color'], 'size': 16},
+                font={'color': COLORS['top-bar-color'], 'size': 10},
                 showlegend=False)
     
-    figure.update_xaxes(showticklabels=False, title_text="")
-    figure.update_yaxes(showticklabels=False, title_text="")
+    figure.update_xaxes(showticklabels=False, title_text="Category")
+    figure.update_yaxes(showticklabels=False, title_text="Ratio")
     
     return figure, update_store
     
