@@ -4,33 +4,42 @@ import hashlib
 import mysql.connector
 
 df = pd.read_csv("gb_latlon.csv")
-locations = list(df['city'])[:10]
+locations = list(df['city'])
 
 
-d = []
 
-for x in range(24):
-    l = ["20"]
-    if x < 10:
-        l.append("0")
-        l.append(str(x))
-        l.append("-")
-        l_ = l[:]
-    else:
-        l.append(str(x))
-        l.append("-")
-        l_ = l[:]
-        
-    for j in range(1, 13):
-        if j < 10:
-            l_.append("0")
-            l_.append(str(j))
-            d.append(''.join(l_))
-            l_ = l[:]
-        else:
-            l_.append(str(j))
-            d.append(''.join(l_))
-            l_ = l[:]
+
+def date_range(start_year, start_month, end_year, end_month):
+    sy = int(start_year)
+    ey = int(end_year)
+    
+    sm = int(start_month.lstrip('0'))
+    em = int(end_month.lstrip('0'))
+
+    r = []
+    for y in range(sy, ey+1):
+        s = 1
+        e = 13
+        if y == sy:
+            s = sm
+            e = 13
+        if y == ey:
+            s = 1
+            e = em + 1
+            
+        y = str(y)
+        for m in range(s, e):
+            l = []
+            l.append(str(y))
+            l.append("-")
+            if m < 10:
+                l.append("0")
+            l.append(str(m))
+            r.append(''.join(l))
+    
+    return r
+
+d = date_range('1950', '1', '2023', '12')
 
 def fetch_data(lat, lng, date):
         payload = {'lat':lat, 'lng':lng, 'date':date}
@@ -50,7 +59,7 @@ def store_cleaned_data(locations):
 
         p = int(df_.population)
 
-        for x in d[250:]:
+        for x in d:
             data = fetch_data(lat, lng, x)
             t = len(data)
             if t != 0:
@@ -67,7 +76,7 @@ def store_cleaned_data(locations):
                     input.insert(0, p_key)
                     r.append(tuple(input))
                 
-        return r
+    return r
 
 
 def store_dropdown_data(locations):
@@ -79,7 +88,7 @@ def store_dropdown_data(locations):
 
         p = int(df_.population)
 
-        for x in d[250:]:
+        for x in d:
             data = fetch_data(lat, lng, x)
             t = len(data)
             if t != 0:
@@ -105,7 +114,7 @@ def store_category_data(locations):
 
         p = int(df_.population)
 
-        for x in d[250:]:
+        for x in d:
             data = fetch_data(lat, lng, x)
             t = len(data)
             if t != 0:
