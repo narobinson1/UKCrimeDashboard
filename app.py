@@ -1,7 +1,6 @@
 # Import packages
 from dash import Dash, DiskcacheManager, CeleryManager, html, dcc, callback, Output, Input, State, ctx
 from dash.exceptions import PreventUpdate
-import dash_daq as daq
 
 import pandas as pd
 import plotly
@@ -315,7 +314,7 @@ dashboard_layout = html.Div(
                                 ),
                                 html.Div([
                                     html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                    html.H1('| Python, Dash, PostgreSQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
+                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
                                     
                                     
                                 ],
@@ -357,23 +356,23 @@ dashboard_layout = html.Div(
                                                     ###### Dashboard configuration
                                                 ''')
                                             ],
-                                            style={'font-weight':'100', 'margin-bottom':'2rem'}
+                                            style={'font-weight':'100', 'margin-bottom':'1rem'}
                                         ),
                                         html.Div(
                                             children=[
-                                                html.H6('Crime count divided by total population'),
+                                                html.P('Crime count divided by total population', style={'font-weight':'100'}),
                                                 dcc.Dropdown(
                                                     options=[{"label": x, "value": x} for x in ['Total', 'Fractional']],
                                                     value='Total',
-                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7'},
+                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'font-weight':'100'},
                                                     id='dropdown-stat-type'
                                                 ),
                                             ],
-                                            style={'margin-bottom':'2rem'}
+                                            style={'margin-bottom':'1rem'}
                                         ),
                                         html.Div(
                                             children=[
-                                                html.H6('Date period when crimes occured'),
+                                                html.P('Date period when crimes occured', style={'font-weight':'100'}),
                                                 
                                                 html.Div(
                                                     children=[
@@ -382,73 +381,76 @@ dashboard_layout = html.Div(
                                                                 dcc.Dropdown(
                                                                     options=[{"label": str(x), "value": str(x)} for x in range(2000, 2024)],
                                                                     value='2023',
-                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '5px', 'margin-bottom': '5px'},
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '0px', 'margin-bottom': '5px', 'font-weight':'100'},
                                                                     placeholder='Start year',
                                                                     id='dropdown-start-year'
                                                                 ),
                                                                 dcc.Dropdown(
                                                                     options=[{"label": str(x), "value": str(x)} for x in range(1, 13)],
                                                                     value='1',
-                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem'},
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'font-weight':'100'},
                                                                     placeholder='Start month',
                                                                     id='dropdown-start-month'
                                                                 )
                                                             ],
-                                                            style={'display':'inline-block', 'padding':'20px'}
+                                                            style={'display':'inline-block', 'padding':'0px'}
                                                         ),
                                                         html.Div(
                                                             children=[
-                                                                html.Img(src='assets/arrow.png', height=30, style={'display':'inline', 'position':'relative', 'bottom':'54px'})
+                                                                html.P('UNTIL')
+                                                                #html.Img(src='assets/arrow.png', height=30, style={'display':'inline', 'position':'relative', 'bottom':'54px'})
                                                             ],
-                                                            style={'display':'inline-block'}
+                                                            style={'display':'inline-block', 'position':'relative', 'left':'55px', 'bottom':'38px'}
                                                         ),
                                                         html.Div(
                                                             children=[
                                                                 dcc.Dropdown(
                                                                     options=[{"label": x, "value": x} for x in range(2000, 2024)],
                                                                     value='2023',
-                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '5px', 'margin-bottom': '5px'},
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '0px', 'margin-bottom': '5px', 'font-weight':'100'},
                                                                     placeholder='End year',
                                                                     id='dropdown-end-year'
                                                                 ),
                                                                 dcc.Dropdown(
                                                                     options=[{"label": x, "value": x} for x in range(1, 13)],
                                                                     value='12',
-                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem'},
+                                                                    style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'font-weight':'100'},
                                                                     placeholder='End month',
                                                                     id='dropdown-end-month'
                                                                 )
                                                             ],
-                                                            style={'display':'inline-block', 'padding':'20px'}
+                                                            style={'display':'inline-block', 'padding':'0px', 'float':'right'}
                                                         ),
                                                         
                                                         
-                                                    ]
+                                                    ],
+                                                    style={'padding':'0px 0px 0px 0px'}
                                                 ),
-                                                dcc.Markdown(id='date-markdown', style={"padding":"20px", 'font-weight': '100', 'font-size': '22px'})
+                                                dcc.Markdown(id='date-markdown', style={"padding":"0px", 'font-weight': '100', 'font-size': '16px'})
             
                                             ],
                                             style={'margin-bottom':'0rem'}
                                         ),
-                                        html.Div(
-                                            children=[
-                                                dcc.Markdown('''
-                                                    ###### Data provider
-                                                    
-                                                    The data used for this project was acquired through the uk.gov Police API.
-                                                ''')
-                                            ],
-                                            style={'font-weight':'100'}
-                                            
-                                        )
+                                        
                                         
                                     ],
-                                    style={'color':COLORS['general']}
+                                    style={'color':COLORS['general'], 'border':'1px solid #2fa4e7', 'padding':'20px', 'margin-bottom':'20px'}
+                                ),
+                                html.Div(
+                                    children=[
+                                        dcc.Markdown('''
+                                            ###### Data provider
+                                            
+                                            The data used for this project was acquired through the uk.gov Police API.
+                                        ''', style={'color':COLORS['general']}),
+                                        
+                                    ],
+                                    style={'font-weight':'100', 'border':'1px solid #2fa4e7', 'padding':'20px'}
+                                    
                                 )
-                                
                                 #end children
                             ],
-                            style={'width': '30%', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'height':'68vh', 'padding':'20px'}
+                            style={'width': '30%', 'display':'inline-block', 'height':'70.1vh', 'padding':'0px'}
                         ),
                         html.Div(
                             children=[
@@ -610,7 +612,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
                 df,
                 x=stat,
                 y='location',
-                height=260,
+                height=230,
                 width=480,
                 color_discrete_sequence=[COLORS['general']]*len(df),
                 hover_name='location',
@@ -670,7 +672,7 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 df,
                 x='ratio',
                 y='category',
-                height=260,
+                height=230,
                 width=460,
                 hover_name='category',
                 hover_data='ratio',
