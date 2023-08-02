@@ -340,7 +340,7 @@ dashboard_layout = html.Div(
                                 dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
                                 value=['London', 'Manchester', 'Liverpool'],
                                 multi=True,
-                                style={'background-color': COLORS['top-bar-background']},
+                                style={'background-color': COLORS['top-bar-background'], 'font-weight':'100'},
                                 id='dropdown-component-final')
                             ],
                             style={'padding':'0px 0px 20px 0px', 'color':'#2fa4e7'}
@@ -426,7 +426,7 @@ dashboard_layout = html.Div(
                                                     ],
                                                     style={'padding':'0px 0px 0px 0px'}
                                                 ),
-                                                dcc.Markdown(id='date-markdown', style={"padding":"0px", 'font-weight': '100', 'font-size': '16px'})
+                                                dcc.Markdown(id='date-markdown', style={"padding":"0px", 'font-weight': '200', 'font-size': '16px'})
             
                                             ],
                                             style={'margin-bottom':'0rem'}
@@ -640,7 +640,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
 
     d = {'1':'January', '2':'February', '3':'March', '4':'April', '5':'May', '6':'June', '7':'July', '8':'August', '9':'September', '10':'October', '11':'November', '12':'December'}
     md = '''
-            > Showing statistic '{}' from {} {} until {} {}
+            > Graph 1: Showing statistic '{}' from {} {} until {} {}
         '''.format(stat, d[start_month], start_year, d[end_month], end_year)
         
     return figure, md
