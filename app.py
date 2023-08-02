@@ -4,6 +4,7 @@ from dash.exceptions import PreventUpdate
 import dash_daq as daq
 
 import pandas as pd
+import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 import json
@@ -108,6 +109,7 @@ def get_count_graph(dropdown_input, start_year, start_month, end_year, end_month
     for (location, total, fractional, month) in cursor:
         l.append(location)
         t.append(total)
+        print(fractional[:6])
         f.append(fractional)
         m.append(month)
 
@@ -130,7 +132,7 @@ def get_count_graph(dropdown_input, start_year, start_month, end_year, end_month
         s_ = 0
         for i in x:
             s_ += float(i)
-        f.append(s_)
+        f.append(float(str(s_)[:6]))
         
         
     
@@ -160,8 +162,9 @@ def get_category(location, start_year, start_month, end_year, end_month):
     format_location = ','.join(['%s'])
     format_dates = ','.join(['%s'] * len(ms))
     query_dropdown_data = ("SELECT location, category, total, fractional, month FROM category_data WHERE location = (%s) AND month IN (%s)" % (format_location, format_dates))
-    print(query_dropdown_data)
+
     cursor.execute(query_dropdown_data, t)
+
 
     l = []
     c = []
@@ -170,7 +173,7 @@ def get_category(location, start_year, start_month, end_year, end_month):
     m = []
     for (location, category, total, fractional, month) in cursor:
         l.append(location)
-        c.append(category)
+        c.append(' '.join(category.split("-")))
         t.append(total)
         f.append(fractional)
         m.append(month)
@@ -202,7 +205,7 @@ def get_category(location, start_year, start_month, end_year, end_month):
     ct = []
     for q in ct_:
         q = q / sum(ct_)
-        ct.append(q)
+        ct.append(float(str(q)[:6]))
         
     
         
@@ -312,7 +315,7 @@ dashboard_layout = html.Div(
                                 ),
                                 html.Div([
                                     html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
+                                    html.H1('| Python, Dash, PostgreSQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
                                     
                                     
                                 ],
@@ -486,12 +489,12 @@ dashboard_layout = html.Div(
                                                                             dcc.Graph(
                                                                                 figure={
                                                                                     'layout':{
-                                                                                        'height': 200,
+                                                                                        'height': 400,
                                                                                         'autosize': True,
                                                                                         'margin': {'b':0, 'r':0, 'l':0, 't':0}
                                                                                     }
                                                                                 },
-                                                                                config={'displayModeBar':False},
+                                                                                config={'displayModeBar':False, 'editSelection':False, 'editable':False, 'showAxisDragHandles':False, 'showAxisRangeEntryBoxes':False, 'responsive':False, 'autosizable':False, 'fillFrame':False, 'scrollZoom':False},
                                                                                 id="output-graph-1"
                                                                             )
                                                                         ],
@@ -501,10 +504,10 @@ dashboard_layout = html.Div(
                                                                 ],
                                                             )
                                                         ],
-                                                        style={"width":"50%", 'padding':'20px 20px 20px 20px'}
+                                                        style={"width":"50%", 'padding':'0px 0px 0px 0px'}
                                                     ),
                                                 ],
-                                                style={'margin-top':'1rem', 'padding':'6px 0px 6px 30px', 'display':'inline-block', 'border':'1px solid #2fa4e7'}
+                                                style={'margin-top':'1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7'}
                                             ),
                                                     
                                             html.Div(
@@ -523,7 +526,7 @@ dashboard_layout = html.Div(
                                                                                         'margin': {'b':0, 'r':0, 'l':0, 't':0}
                                                                                     }
                                                                                 },
-                                                                                config={'displayModeBar':False},
+                                                                                config={'displayModeBar':False, 'scrollZoom':False},
                                                                                 id="output-graph-2"
                                                                             )
                                                                         ],
@@ -534,10 +537,10 @@ dashboard_layout = html.Div(
                                                                 ],
                                                             ),
                                                         ],
-                                                        style={"width":"50%", 'padding':'20px 20px 20px 20px'}
+                                                        style={"width":"50%", 'padding':'0px 0px 0px 0px'}
                                                     ),
                                                 ],
-                                                style={'margin-top': '1rem', 'padding':'6px 30px 6px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'float':'right'}
+                                                style={'margin-top': '1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'float':'right'}
                                             )
                                                     
                                         ],
@@ -594,32 +597,44 @@ def display_page(pathname, cache):
     Input('dropdown-end-month', 'value')
 )
 def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year, end_month):
-    df = get_count_graph(dropdown_input, start_year, start_month, end_year, end_month)
-    df.sort_values(axis=0, by='total', ascending=False, inplace=True)
-    
-    
     if stat_type == 'Total':
         stat = 'total'
     if stat_type == 'Fractional':
         stat = 'fractional'
         
+    df = get_count_graph(dropdown_input, start_year, start_month, end_year, end_month)
+    df.sort_values(axis=0, by=stat, ascending=False, inplace=True)
+
+        
     figure = px.bar(
                 df,
-                x='location',
-                y=stat,
-                height=160,
-                width=400,
-                color_discrete_sequence=[COLORS['general']]*len(dropdown_input))
-                
-    figure.update_layout(
-                autosize=False,
-                margin={'b':10,'r':10,'l':10,'t':10},
-                plot_bgcolor=COLORS['content-background'],
-                paper_bgcolor=COLORS['content-background'],
-                font={'color': COLORS['general'], 'size': 10})
+                x=stat,
+                y='location',
+                height=260,
+                width=480,
+                color_discrete_sequence=[COLORS['general']]*len(df),
+                hover_name='location',
+                hover_data=stat,
+                text=stat,
+                orientation='h')
     
-    figure.update_xaxes(showticklabels=False, title_text=stat, anchor="x")
-    figure.update_yaxes(showticklabels=False, title_text="{} count per location".format(stat))
+    figure.layout.autosize=True
+    figure.layout.plot_bgcolor=COLORS['content-background']
+    figure.layout.paper_bgcolor=COLORS['content-background']
+    figure.layout.font.color=COLORS['general']
+    figure.layout.font.size=10
+    
+    figure.layout.yaxis.title=""
+    figure.layout.xaxis.title="Incidents reported ({})".format(stat)
+    figure.layout.xaxis.gridcolor=COLORS['content-background']
+    figure.layout.yaxis.gridcolor=COLORS['content-background']
+    figure.layout.xaxis.tickangle=90
+    
+    
+        
+    figure.update_layout(
+                margin={'b':10,'r':10,'l':10,'t':10})
+    
 
     d = {'1':'January', '2':'February', '3':'March', '4':'April', '5':'May', '6':'June', '7':'July', '8':'August', '9':'September', '10':'October', '11':'November', '12':'December'}
     md = '''
@@ -649,15 +664,26 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
     
 
     df = get_category(location, start_year, start_month, end_year, end_month)
-
+    df.sort_values(axis=0, by='ratio', ascending=False, inplace=True)
+    
     figure = px.bar(
                 df,
-                x='category',
-                y='ratio',
-                height=160,
-                width=400,
-                color_discrete_sequence=[COLORS['general']]*len(df)
+                x='ratio',
+                y='category',
+                height=260,
+                width=460,
+                hover_name='category',
+                hover_data='ratio',
+                text='ratio',
+                color_discrete_sequence=[COLORS['general']]*len(df),
+                orientation='h',
     )
+
+    figure.layout.xaxis.title="Category ratio"
+    figure.layout.yaxis.title=""
+    figure.layout.xaxis.gridcolor=COLORS['content-background']
+    figure.layout.yaxis.gridcolor=COLORS['content-background']
+    
     figure.update_layout(
                 autosize=True,
                 margin={'b':10,'r':10,'l':10,'t':10},
@@ -665,9 +691,6 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 paper_bgcolor=COLORS['content-background'],
                 font={'color': COLORS['top-bar-color'], 'size': 10},
                 showlegend=False)
-    
-    figure.update_xaxes(showticklabels=False, title_text="Category")
-    figure.update_yaxes(showticklabels=False, title_text="Ratio")
     
     return figure, update_store
     
@@ -698,6 +721,8 @@ def update_dropdown(json_data):
 )
 def update_map(dropdown_input, stat_type, start_year, start_month, end_year, end_month):
     df = get_count_map(dropdown_input, start_year, start_month, end_year, end_month)
+
+    scale = px.colors.sequential.Blues[2:]
     
     if stat_type == 'Total':
         stat = 'total'
@@ -710,7 +735,8 @@ def update_map(dropdown_input, stat_type, start_year, start_month, end_year, end
                 color=stat,
                 size=stat,
                 hover_name='location',
-                color_continuous_scale=px.colors.sequential.Blues,
+                hover_data=stat,
+                color_continuous_scale=scale,
                 zoom=5,
                 height=320
     )
