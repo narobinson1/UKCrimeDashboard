@@ -172,7 +172,7 @@ def get_category(location, start_year, start_month, end_year, end_month):
     m = []
     for (location, category, total, fractional, month) in cursor:
         l.append(location)
-        c.append(' '.join(category.split("-")))
+        c.append(' '.join(category.split("-")).capitalize())
         t.append(total)
         f.append(fractional)
         m.append(month)
@@ -316,9 +316,13 @@ dashboard_layout = html.Div(
                                     children=[
                                         html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
                                         html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
-                                        html.Button('GUIDE', className='menu-btn', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'36rem'}),
-                                        html.P('An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data.', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='test'),
+                                        html.Button('GUIDE', className='menu-btn-guide', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'32rem'}),
+                                        html.P('''Under the section 'Choose locations' there is an extensive list of locations in the UK to choose from. These locations are used in the Dashboard configuration section, before being represented in the form of figures. The 'Dashboard configuration' section provides the possibility to illustrate either total or fractional crime counts. The fractional crime counts are the total divided by the population of the location the crimes occured, and the total crime counts is the sum of all crimes, regardless of category, which occurred in a specific location. The 'Dashboard configuration' section also provides the ability to control the time period in which the crimes occured.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='guide-text'),
+                                        html.Button('ABOUT', className='menu-btn-about', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'12rem'}),
+                                        html.P('''This dashboard presents police data offered through the openly-available United Kingdom Government Police Application Programming Interface
+                                        in JSON format. The data is presented as clearly as possible through interactive graphs and a central interactive map. Functionalities available include total and fractional crime count among a list of selected locations, and the ratio of specific crime categories for individual locations. The main value this dashboard offers is the possibility to shed light on the reported intensity and frequency of crimes amongst locations in the UK, through the observation of Police data.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='about-text'),
                                         html.Div(style={'color':COLORS['general'], 'font-weight':'100', 'background-color':'black', 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid', 'height':'90vh', 'width':'100vw'}, className='mist')
+                                        
                                     ],
                                     style={'padding-bottom':'0rem'}
                                 ),
@@ -429,15 +433,16 @@ dashboard_layout = html.Div(
                                                     ],
                                                     style={'padding':'0px 0px 0px 0px'}
                                                 ),
-                                                dcc.Markdown(id='date-markdown', style={"padding":"0px", 'font-weight': '200', 'font-size': '16px'})
+                                                dcc.Markdown(id='date-markdown-1', style={"padding":"0px", 'font-weight': '200', 'font-size': '20px'}),
+                                                dcc.Markdown(id='date-markdown-2', style={"padding":"0px", 'font-weight': '200', 'font-size': '20px'})
             
                                             ],
-                                            style={'margin-bottom':'0rem'}
+                                            style={'margin-bottom':'-1rem'}
                                         ),
                                         
                                         
                                     ],
-                                    style={'color':COLORS['general'], 'border':'1px solid #2fa4e7', 'padding':'20px', 'margin-bottom':'20px'}
+                                    style={'color':COLORS['general'], 'border':'1px solid #2fa4e7', 'padding':'20px', 'margin-bottom':'16px'}
                                 ),
                                 html.Div(
                                     children=[
@@ -445,10 +450,10 @@ dashboard_layout = html.Div(
                                             ###### Data provider
                                             
                                             The data used for this project was acquired through the uk.gov Police API.
-                                        ''', style={'color':COLORS['general']}),
+                                        ''', style={'color':COLORS['general'], 'font-size':'14px'}),
                                         
                                     ],
-                                    style={'font-weight':'100', 'border':'1px solid #2fa4e7', 'padding':'20px'}
+                                    style={'font-weight':'100', 'border':'1px solid #2fa4e7', 'padding':'20px 20px 0px 20px'}
                                     
                                 )
                                 #end children
@@ -593,7 +598,7 @@ def display_page(pathname, cache):
     
 @callback(
     Output('output-graph-1', 'figure'),
-    Output('date-markdown', 'children'),
+    Output('date-markdown-1', 'children'),
     Input('dropdown-component-final', 'value'),
     Input('dropdown-stat-type', 'value'),
     Input('dropdown-start-year', 'value'),
@@ -615,12 +620,11 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
                 df,
                 x=stat,
                 y='location',
-                height=230,
+                height=274,
                 width=480,
                 color_discrete_sequence=[COLORS['general']]*len(df),
                 hover_name='location',
                 hover_data=stat,
-                text=stat,
                 orientation='h')
     
     figure.layout.autosize=True
@@ -629,6 +633,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
     figure.layout.font.color=COLORS['general']
     figure.layout.font.size=10
     
+    figure.layout.yaxis.ticksuffix="  "
     figure.layout.yaxis.title=""
     figure.layout.xaxis.title="Incidents reported ({})".format(stat)
     figure.layout.xaxis.gridcolor=COLORS['content-background']
@@ -652,6 +657,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
 @callback(
     Output('output-graph-2', 'figure'),
     Output('graph-2-location-store', 'data'),
+    Output('date-markdown-2', 'children'),
     Input('output-map-1', 'clickData'),
     Input('dropdown-start-year', 'value'),
     Input('dropdown-start-month', 'value'),
@@ -675,15 +681,15 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 df,
                 x='ratio',
                 y='category',
-                height=230,
+                height=274,
                 width=460,
                 hover_name='category',
                 hover_data='ratio',
-                text='ratio',
                 color_discrete_sequence=[COLORS['general']]*len(df),
                 orientation='h',
     )
 
+    figure.layout.yaxis.ticksuffix="  "
     figure.layout.xaxis.title="Category ratio"
     figure.layout.yaxis.title=""
     figure.layout.xaxis.gridcolor=COLORS['content-background']
@@ -696,8 +702,13 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 paper_bgcolor=COLORS['content-background'],
                 font={'color': COLORS['top-bar-color'], 'size': 10},
                 showlegend=False)
-    
-    return figure, update_store
+
+    d = {'1':'January', '2':'February', '3':'March', '4':'April', '5':'May', '6':'June', '7':'July', '8':'August', '9':'September', '10':'October', '11':'November', '12':'December'}
+    md = '''
+            > Graph 2: Showing location '{}' from {} {} until {} {}
+        '''.format(location, d[start_month], start_year, d[end_month], end_year)
+        
+    return figure, update_store, md
     
     
 
@@ -743,7 +754,7 @@ def update_map(dropdown_input, stat_type, start_year, start_month, end_year, end
                 hover_data=stat,
                 color_continuous_scale=scale,
                 zoom=5,
-                height=320
+                height=272
     )
     
     figure.update_layout(
@@ -753,8 +764,8 @@ def update_map(dropdown_input, stat_type, start_year, start_month, end_year, end
                 paper_bgcolor=COLORS['content-background'],
                 coloraxis_colorbar_showticklabels=False,
                 coloraxis_colorbar_title="",
-                coloraxis_colorbar_x=0.90,
-                coloraxis_colorbar_thickness=70
+                coloraxis_colorbar_x=0.92,
+                coloraxis_colorbar_thickness=50
     )
                 
     return figure

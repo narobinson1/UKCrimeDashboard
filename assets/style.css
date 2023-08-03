@@ -2,21 +2,40 @@
 	display: none;
 }
 
-.test {
+.about-text {
 	display: none;
 	position: absolute;
 	z-index:3;
 }
 
-.menu-btn {
+.menu-btn-about {
 	border: 0px;
 }
 
-.menu-btn:hover~.test {
+.menu-btn-about:hover~.about-text {
 	display: block;
 }
 
-.menu-btn:hover~.mist {
+.menu-btn-about:hover~.mist {
+	display: block;
+	opacity: 0.5;
+}
+
+.guide-text {
+	display: none;
+	position: absolute;
+	z-index:3;
+}
+
+.menu-btn-guide {
+	border: 0px;
+}
+
+.menu-btn-guide:hover~.guide-text {
+	display: block;
+}
+
+.menu-btn-guide:hover~.mist {
 	display: block;
 	opacity: 0.5;
 }
