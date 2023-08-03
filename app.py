@@ -306,24 +306,27 @@ dashboard_layout = html.Div(
                                 html.A(
                                     children=[
                                         
-                                        html.Img(src='assets/github.png', id='github-logo', height=70, style={'display':'inline', 'float':'right'})
+                                        html.Img(src='assets/github.png', id='github-logo', height=70, style={'display':'inline', 'float':'right', 'padding-bottom':'16px'})
 #
                                     ],
                                     href='https://github.com/narobinson1',
                                     target='_blank'
                                 ),
-                                html.Div([
-                                    html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                    html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
-                                    
-                                    
-                                ],
-                                style={'padding-bottom':'2.4rem'}
+                                html.Div(
+                                    children=[
+                                        html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+                                        html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
+                                        html.Button('GUIDE', className='menu-btn', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'36rem'}),
+                                        html.P('An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data. An unofficial dashboard illustrating police data.', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='test'),
+                                        html.Div(style={'color':COLORS['general'], 'font-weight':'100', 'background-color':'black', 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid', 'height':'90vh', 'width':'100vw'}, className='mist')
+                                    ],
+                                    style={'padding-bottom':'0rem'}
                                 ),
                             ],
+                            
                         ),
                     ],
-                    style={"padding":"2rem 2rem 0rem 2rem", 'borderBottom':'3px solid #2fa4e7', "background-color": COLORS['content-background']}
+                    style={"padding":"2rem 2rem 2rem 2rem", 'borderBottom':'1px solid #2fa4e7', "background-color": COLORS['content-background']}
                 ),
                 
             ],
@@ -343,7 +346,7 @@ dashboard_layout = html.Div(
                                 style={'background-color': COLORS['top-bar-background'], 'font-weight':'100'},
                                 id='dropdown-component-final')
                             ],
-                            style={'padding':'0px 0px 20px 0px', 'color':'#2fa4e7'}
+                            style={'padding':'10px 10px 10px 10px', 'color':'#2fa4e7', 'border':'1px solid', 'margin-bottom':'16px'}
                         ),
                         html.Div(
                             children=[

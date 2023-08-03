@@ -1,3 +1,33 @@
+.cont {
+	display: none;
+}
+
+.test {
+	display: none;
+	position: absolute;
+	z-index:3;
+}
+
+.menu-btn {
+	border: 0px;
+}
+
+.menu-btn:hover~.test {
+	display: block;
+}
+
+.menu-btn:hover~.mist {
+	display: block;
+	opacity: 0.5;
+}
+
+.mist {
+	position: absolute;
+	z-index:2;
+	display: none;
+}
+
+
 .Select-control {
 	background-color: #2a2630 !important;
 	color: #FFFFFF;
@@ -13,4 +43,6 @@
 .Select-value-label {
 	color: #2fa4e7 !important;
 }
+
+
 
