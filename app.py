@@ -204,7 +204,7 @@ def get_category(location, start_year, start_month, end_year, end_month):
     ct = []
     for q in ct_:
         q = q / sum(ct_)
-        ct.append(float(str(q)[:6]))
+        ct.append(float(str(q)[:6])*100)
         
     
         
@@ -350,7 +350,7 @@ dashboard_layout = html.Div(
                                 style={'background-color': COLORS['content-background'], 'font-weight':'100'},
                                 id='dropdown-component-final')
                             ],
-                            style={'padding':'10px 10px 10px 10px', 'color':'#2fa4e7', 'margin-bottom':'16px', 'background-color':'#180373'}
+                            style={'padding':'10px 10px 10px 10px', 'color':'#2fa4e7', 'margin-bottom':'16px', 'background-color':'#180373', 'border-radius':'10px'}
                         ),
                         html.Div(
                             children=[
@@ -442,7 +442,7 @@ dashboard_layout = html.Div(
                                         
                                         
                                     ],
-                                    style={'color':COLORS['general'], 'padding':'20px', 'margin-bottom':'16px', 'background-color':'#180373'}
+                                    style={'color':COLORS['general'], 'padding':'20px', 'margin-bottom':'16px', 'background-color':'#180373', 'border-radius':'10px'}
                                 ),
                                 html.Div(
                                     children=[
@@ -453,7 +453,7 @@ dashboard_layout = html.Div(
                                         ''', style={'color':COLORS['general'], 'font-size':'14px'}),
                                         
                                     ],
-                                    style={'font-weight':'100', 'padding':'20px 20px 1px 20px', 'background-color':'#180373'}
+                                    style={'font-weight':'100', 'padding':'20px 20px 1px 20px', 'background-color':'#180373', 'border-radius':'10px'}
                                     
                                 )
                                 #end children
@@ -623,10 +623,10 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
                 height=274,
                 width=480,
                 color_discrete_sequence=[COLORS['general']]*len(df),
-                hover_name='location',
-                hover_data=stat,
                 orientation='h')
     
+    figure.update_traces(hovertemplate=None)
+    figure.layout.hovermode="y"
     figure.layout.autosize=True
     figure.layout.plot_bgcolor=COLORS['content-background']
     figure.layout.paper_bgcolor=COLORS['content-background']
@@ -635,7 +635,7 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
     
     figure.layout.yaxis.ticksuffix="  "
     figure.layout.yaxis.title=""
-    figure.layout.xaxis.title="Incidents reported ({})".format(stat)
+    figure.layout.xaxis.title="Graph 1: Incidents reported ({})".format(stat)
     figure.layout.xaxis.gridcolor=COLORS['content-background']
     figure.layout.yaxis.gridcolor=COLORS['content-background']
     figure.layout.xaxis.tickangle=90
@@ -683,14 +683,18 @@ def update_category(click_data_map, start_year, start_month, end_year, end_month
                 y='category',
                 height=274,
                 width=460,
-                hover_name='category',
-                hover_data='ratio',
                 color_discrete_sequence=[COLORS['general']]*len(df),
                 orientation='h',
     )
 
+    figure.layout.title='{}'.format(location)
+    figure.layout.title.x=0.98
+    figure.layout.title.y=0.9
+    figure.layout.title.font.size=40
+    figure.update_traces(hovertemplate=None)
+    figure.layout.hovermode="y"
     figure.layout.yaxis.ticksuffix="  "
-    figure.layout.xaxis.title="Category ratio"
+    figure.layout.xaxis.title="Graph 2: Category ratio percentage"
     figure.layout.yaxis.title=""
     figure.layout.xaxis.gridcolor=COLORS['content-background']
     figure.layout.yaxis.gridcolor=COLORS['content-background']
