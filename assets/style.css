@@ -1,3 +1,7 @@
+body {
+	background-color: #0e0340;
+}
+
 .cont {
 	display: none;
 }
@@ -12,15 +16,30 @@
 	border: 0px;
 }
 
-body {
-	background-color: #0e0340;
-}
-
 .menu-btn-about:hover~.about-text {
 	display: block;
 }
 
 .menu-btn-about:hover~.mist {
+	display: block;
+	opacity: 0.5;
+}
+
+.notes-text {
+	display: none;
+	position: absolute;
+	z-index:3;
+}
+
+.menu-btn-notes {
+	border: 0px;
+}
+
+.menu-btn-notes:hover~.notes-text {
+	display: block;
+}
+
+.menu-btn-notes:hover~.mist {
 	display: block;
 	opacity: 0.5;
 }
