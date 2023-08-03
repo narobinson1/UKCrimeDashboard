@@ -286,7 +286,7 @@ def get_count_map(dropdown_input, start_year, start_month, end_year, end_month):
         s_ = 0
         for i in x:
             s_ += float(i)
-        f.append(s_)
+        f.append(float(str(s_)[:6]))
         
 
     
