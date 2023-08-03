@@ -48,15 +48,15 @@
 
 
 .Select-control {
-	background-color: #2a2630 !important;
+	background-color: #0e0340 !important;
 	color: #FFFFFF;
-	border: 1px solid #2fa4e7 !important;
+	border: 1px solid #0e0340 !important;
 }
 
 .Select-menu-outer {
-	background-color: #2a2630;
+	background-color: #0e0340;
 	color: #2fa4e7;
-	border: 1px solid #2fa4e7;
+	border: 1px solid #0e0340;
 }
 
 .Select-value-label {

@@ -25,7 +25,7 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 COLORS = {
     "top-bar-background": "#172952",
     "top-bar-color": "#028acf",
-    "content-background": "#2a2630",
+    "content-background": "#180373",
     "general": "#2fa4e7"
 }
 
@@ -35,7 +35,7 @@ TOPBAR_STYLE = {
 }
 
 CONTENT_STYLE = {
-    "background-color": COLORS['content-background']
+    "background-color": '#0e0340'
 }
 
 
@@ -317,10 +317,10 @@ dashboard_layout = html.Div(
                                         html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
                                         html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
                                         html.Button('GUIDE', className='menu-btn-guide', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'32rem'}),
-                                        html.P('''Under the section 'Choose locations' there is an extensive list of locations in the UK to choose from. These locations are used in the Dashboard configuration section, before being represented in the form of figures. The 'Dashboard configuration' section provides the possibility to illustrate either total or fractional crime counts. The fractional crime counts are the total divided by the population of the location the crimes occured, and the total crime counts is the sum of all crimes, regardless of category, which occurred in a specific location. The 'Dashboard configuration' section also provides the ability to control the time period in which the crimes occured.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='guide-text'),
+                                        html.P('''Under the section 'Choose locations' there is an extensive list of locations in the UK to choose from. These locations are used in the Dashboard configuration section, before being represented in the form of figures. The 'Dashboard configuration' section provides the possibility to illustrate either total or fractional crime counts. The fractional crime counts are the total divided by the population of the location the crimes occured, and the total crime counts is the sum of all crimes, regardless of category, which occurred in a specific location. The 'Dashboard configuration' section also provides the ability to control the time period in which the crimes occured.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='guide-text'),
                                         html.Button('ABOUT', className='menu-btn-about', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'12rem'}),
                                         html.P('''This dashboard presents police data offered through the openly-available United Kingdom Government Police Application Programming Interface
-                                        in JSON format. The data is presented as clearly as possible through interactive graphs and a central interactive map. Functionalities available include total and fractional crime count among a list of selected locations, and the ratio of specific crime categories for individual locations. The main value this dashboard offers is the possibility to shed light on the reported intensity and frequency of crimes amongst locations in the UK, through the observation of Police data.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid'}, className='about-text'),
+                                        in JSON format. The data is presented as clearly as possible through interactive graphs and a central interactive map. Functionalities available include total and fractional crime count among a list of selected locations, and the ratio of specific crime categories for individual locations. The main value this dashboard offers is the possibility to shed light on the reported intensity and frequency of crimes amongst locations in the UK, through the observation of Police data.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='about-text'),
                                         html.Div(style={'color':COLORS['general'], 'font-weight':'100', 'background-color':'black', 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid', 'height':'90vh', 'width':'100vw'}, className='mist')
                                         
                                     ],
@@ -330,7 +330,7 @@ dashboard_layout = html.Div(
                             
                         ),
                     ],
-                    style={"padding":"2rem 2rem 2rem 2rem", 'borderBottom':'1px solid #2fa4e7', "background-color": COLORS['content-background']}
+                    style={"padding":"2rem 2rem 2rem 2rem", "background-color":COLORS['content-background']}
                 ),
                 
             ],
@@ -347,10 +347,10 @@ dashboard_layout = html.Div(
                                 dcc.Dropdown(options=[{"label": x, "value": x} for x in ['London', 'Manchester', 'Liverpool', 'Bristol']],
                                 value=['London', 'Manchester', 'Liverpool'],
                                 multi=True,
-                                style={'background-color': COLORS['top-bar-background'], 'font-weight':'100'},
+                                style={'background-color': COLORS['content-background'], 'font-weight':'100'},
                                 id='dropdown-component-final')
                             ],
-                            style={'padding':'10px 10px 10px 10px', 'color':'#2fa4e7', 'border':'1px solid', 'margin-bottom':'16px'}
+                            style={'padding':'10px 10px 10px 10px', 'color':'#2fa4e7', 'margin-bottom':'16px', 'background-color':'#180373'}
                         ),
                         html.Div(
                             children=[
@@ -442,7 +442,7 @@ dashboard_layout = html.Div(
                                         
                                         
                                     ],
-                                    style={'color':COLORS['general'], 'border':'1px solid #2fa4e7', 'padding':'20px', 'margin-bottom':'16px'}
+                                    style={'color':COLORS['general'], 'padding':'20px', 'margin-bottom':'16px', 'background-color':'#180373'}
                                 ),
                                 html.Div(
                                     children=[
@@ -453,7 +453,7 @@ dashboard_layout = html.Div(
                                         ''', style={'color':COLORS['general'], 'font-size':'14px'}),
                                         
                                     ],
-                                    style={'font-weight':'100', 'border':'1px solid #2fa4e7', 'padding':'20px 20px 0px 20px'}
+                                    style={'font-weight':'100', 'padding':'20px 20px 1px 20px', 'background-color':'#180373'}
                                     
                                 )
                                 #end children
@@ -482,7 +482,7 @@ dashboard_layout = html.Div(
                                                     )
                                                 ],
                                                 # Parent div map loading style
-                                                style={"border":"1px solid #2fa4e7"}
+                                                style={'background-color':'#180373'}
                                             ),
 
                                 
@@ -517,7 +517,7 @@ dashboard_layout = html.Div(
                                                         style={"width":"50%", 'padding':'0px 0px 0px 0px'}
                                                     ),
                                                 ],
-                                                style={'margin-top':'1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7'}
+                                                style={'margin-top':'1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'background-color':'#180373'}
                                             ),
                                                     
                                             html.Div(
@@ -550,7 +550,7 @@ dashboard_layout = html.Div(
                                                         style={"width":"50%", 'padding':'0px 0px 0px 0px'}
                                                     ),
                                                 ],
-                                                style={'margin-top': '1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'border':'1px solid #2fa4e7', 'float':'right'}
+                                                style={'margin-top': '1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'background-color':'#180373', 'float':'right'}
                                             )
                                                     
                                         ],
@@ -560,7 +560,7 @@ dashboard_layout = html.Div(
                                         ]
                                 )
                             ],
-                            style={'width':'70%', 'display':'inline-block', 'background-color':COLORS['content-background'], 'float':'right', 'padding': '0px 0px 0px 18px', 'height':'68vh'}
+                            style={'width':'70%', 'display':'inline-block', 'background-color':'#0e0340', 'float':'right', 'padding': '0px 0px 0px 18px', 'height':'68vh'}
 
                         ),
                     ],
