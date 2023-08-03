@@ -4,7 +4,7 @@ import hashlib
 import mysql.connector
 
 df = pd.read_csv("gb_latlon.csv")
-locations = list(df['city'])
+locations = list(df['city'])[:10]
 
 
 
@@ -39,7 +39,7 @@ def date_range(start_year, start_month, end_year, end_month):
     
     return r
 
-d = date_range('1950', '1', '2023', '12')
+d = date_range('2020', '1', '2023', '12')
 
 def fetch_data(lat, lng, date):
         payload = {'lat':lat, 'lng':lng, 'date':date}

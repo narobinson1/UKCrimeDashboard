@@ -383,10 +383,14 @@ dashboard_layout = html.Div(
                                                 
                                                 html.Div(
                                                     children=[
+                                                        dcc.ConfirmDialog(
+                                                            id='date-selection-error',
+                                                            message='Please select an end date in the future of the start date.',
+                                                        ),
                                                         html.Div(
                                                             children=[
                                                                 dcc.Dropdown(
-                                                                    options=[{"label": str(x), "value": str(x)} for x in range(2000, 2024)],
+                                                                    options=[{"label": str(x), "value": str(x)} for x in range(2020, 2024)],
                                                                     value='2023',
                                                                     style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '0px', 'margin-bottom': '5px', 'font-weight':'100'},
                                                                     placeholder='Start year',
@@ -412,7 +416,7 @@ dashboard_layout = html.Div(
                                                         html.Div(
                                                             children=[
                                                                 dcc.Dropdown(
-                                                                    options=[{"label": x, "value": x} for x in range(2000, 2024)],
+                                                                    options=[{"label": x, "value": x} for x in range(2020, 2024)],
                                                                     value='2023',
                                                                     style={'background-color':COLORS['content-background'], 'color':'#2fa4e7', 'width':'7rem', 'margin-top': '0px', 'margin-bottom': '5px', 'font-weight':'100'},
                                                                     placeholder='End year',
@@ -595,7 +599,21 @@ def display_page(pathname, cache):
     else:
         return '404'
 
+@callback(
+    Output('date-selection-error','displayed'),
+    Input('dropdown-start-year', 'value'),
+    Input('dropdown-start-month', 'value'),
+    Input('dropdown-end-year', 'value'),
+    Input('dropdown-end-month', 'value')
+)
+def confirm_dialog(start_year, start_month, end_year, end_month):
+    if end_year < start_year:
+        return True
+    if end_year == start_year and end_month < start_month:
+        return True
     
+    return False
+        
 @callback(
     Output('output-graph-1', 'figure'),
     Output('date-markdown-1', 'children'),
@@ -666,6 +684,11 @@ def update_graph_1(dropdown_input, stat_type, start_year, start_month, end_year,
     State('graph-2-location-store', 'data')
 )
 def update_category(click_data_map, start_year, start_month, end_year, end_month, location):
+    if end_year < start_year:
+        raise PreventUpdate
+    if end_year == start_year and end_month < start_month:
+        raise PreventUpdate
+        
     location = location
     update_store = location
     if ctx.triggered_id == 'output-map-1':
