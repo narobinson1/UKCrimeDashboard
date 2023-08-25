@@ -621,8 +621,8 @@ def update_category(click_data_map, location):
 )
 def update_dropdown(json_data):
     df = pd.read_json(json_data, orient="split")
-    dropdown_list = df['city'].unique()
-    options = [{"label": x, "value": x} for x in dropdown_list]
+    dropdown_list = list(df['city'].unique())
+    options = [{"label": x, "value": x} for x in dropdown_list][:10]
     values = dropdown_list[:10]
     return options, values
 
