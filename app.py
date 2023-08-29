@@ -503,7 +503,7 @@ def display_page(pathname, cache):
     prevent_initial_call=True
 )
 def confirm_dialog(start_year, start_month, end_year, end_month):
-    return True, '2023', '1', '2023', '1'
+    return True, start_year, start_month, end_year, end_month
         
 @callback(
     Output('output-graph-1', 'figure'),
@@ -549,7 +549,7 @@ def update_graph_1(dropdown_input, stat_type):
     figure.update_layout(
                 margin={'b':10,'r':10,'l':10,'t':10})
     
-
+    print(type(figure))
     md = '''
             > Graph 1: Showing statistic '{}'
         '''.format(stat)
