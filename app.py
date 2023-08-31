@@ -74,7 +74,7 @@ def date_range(start_year, start_month, end_year, end_month):
                 l.append("0")
             l.append(str(m))
             r.append(''.join(l))
-    
+            
     return r
 
 d = date_range('2020', '1', '2023', '12')
@@ -87,7 +87,8 @@ def fetch_data(lat, lng):
         else:
             res = r.json()
             return res
-            
+
+    
 # Get totals from db
 def get_count_graph(dropdown_input):
     l_ = []
@@ -112,11 +113,13 @@ def get_count_graph(dropdown_input):
         t_.append(t)
         f_.append(float(str(f*100)[:5]))
                 
-    d = {'location':l_, 'total':t_, 'fractional':f_}
+    d = {'location': l_, 'total': t_, 'fractional': f_}
     df = pd.DataFrame(d)
-
+    
     return df
     
+
+
 # Get statistics from db
 def get_category(location):
     df = df_g[df_g['city'] == location]
@@ -145,9 +148,10 @@ def get_category(location):
     d = {'category':c,'ratio':cc}
 
     df = pd.DataFrame(d)
-        
+    print(c, cc)
     return df
 
+get_category('London')
     
 # Get statistics from db
 def get_count_map(dropdown_input):
@@ -199,15 +203,15 @@ dashboard_layout = html.Div(
                                 ),
                                 html.Div(
                                     children=[
-                                        html.H1('UK Crime rates', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
-                                        html.H1('| Python, Dash, MySQL', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
-                                        html.Button('GUIDE', className='menu-btn-guide', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'28rem'}),
+                                        html.H1('UK Crime rates', id='app-heading', style={'margin-right': '0.5rem', 'display':'inline', 'width':'20vw', 'margin-bottom':'10rem', 'font-weight':'300'}),
+                                        html.H1('| Python, Dash, MySQL', id='app-sub-heading', style={'font-weight':'10', 'margin-right':'0', 'padding':'0', 'width':'25vw', 'display':'inline'}),
+                                        html.Button('GUIDE', id='app-guide-header', className='menu-btn-guide', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'28rem'}),
                                         html.P('''Under the section 'Choose locations' there is an extensive list of locations in the UK to choose from. These locations are used in the Dashboard configuration section, before being represented in the form of figures. The 'Dashboard configuration' section provides the possibility to illustrate either total or fractional crime counts. The fractional crime counts are the total divided by the population of the location the crimes occured, and the total crime counts is the sum of all crimes, regardless of category, which occurred in a specific location. The 'Dashboard configuration' section also provides the ability to control the time period in which the crimes occured.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='guide-text'),
                                         
-                                        html.Button('NOTES', className='menu-btn-notes', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'30rem'}),
+                                        html.Button('NOTES', id='app-notes-header', className='menu-btn-notes', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'30rem'}),
                                         html.P('''The data functionality of the dashboard is currently unavailable. This version of the dashboard queries data directly from the UK Police Application Programming Interface, and therefore the time needed to process data in real-time would be too significant. Developed on a separate branch from the main git repository, another version of the dashboard has this data functionality available as it queries pre-processed data from a local mysql database instead of performing real-time processing. The upkeep of renting storage space on a cloud service like AWS, Google Cloud or Microsoft Azure is too expensive, so the database version of this dashboard is not accessible remotely.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='notes-text'),
                                         
-                                        html.Button('ABOUT', className='menu-btn-about', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'8rem'}),
+                                        html.Button('ABOUT', id='app-about-header', className='menu-btn-about', name='menu', style={'color':COLORS['general'], 'background-color':COLORS['content-background'], 'font-weight':'100', 'font-size':'30px', 'position':'relative', 'left':'8rem'}),
                                         html.P('''This dashboard presents police data offered through the openly-available United Kingdom Government Police Application Programming Interface
                                         in JSON format. The data is presented as clearly as possible through interactive graphs and a central interactive map. Functionalities available include total and fractional crime count among a list of selected locations, and the ratio of specific crime categories for individual locations. The main value this dashboard offers is the possibility to shed light on the reported intensity and frequency of crimes amongst locations in the UK, through the observation of Police data.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='about-text'),
                                         html.Div(style={'color':COLORS['general'], 'font-weight':'100', 'background-color':'black', 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid', 'height':'90vh', 'width':'100vw'}, className='mist')
