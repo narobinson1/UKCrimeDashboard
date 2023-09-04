@@ -148,7 +148,6 @@ def get_category(location):
     d = {'category':c,'ratio':cc}
 
     df = pd.DataFrame(d)
-    print(c, cc)
     return df
 
 get_category('London')
@@ -553,7 +552,7 @@ def update_graph_1(dropdown_input, stat_type):
     figure.update_layout(
                 margin={'b':10,'r':10,'l':10,'t':10})
     
-    print(type(figure))
+
     md = '''
             > Graph 1: Showing statistic '{}'
         '''.format(stat)
