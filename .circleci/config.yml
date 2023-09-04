@@ -11,14 +11,9 @@ jobs:
             - checkout
             - python/install-packages:
                   pkg-manager: pip
-            - persist_to_workspace:
-                  root: ~/project
-                  paths:
-                      - .
+
     test:
-        executor:
-            - attach_workspace:
-                  at: ~/project
+        executor: python/default
         steps:
             - run:
                   name: Run tests
