@@ -16,10 +16,10 @@ jobs:
                   paths:
                       - .
     test:
-        executor: python/default
-        steps:
+        executor:
             - attach_workspace:
                   at: ~/project
+        steps:
             - run:
                   name: Run tests
                   command: python -m pytest
