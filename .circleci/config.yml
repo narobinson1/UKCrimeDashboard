@@ -14,25 +14,9 @@ jobs:
             - run:
                   name: Run tests
                   command: python -m pytest
-            - persist_to_workspace:
-                  root: ~/project
-                  paths:
-                      - .
-    deploy:
-        executor: heroku/default
-        steps:
-            - attach_workspace:
-                  at: ~/project
-            - heroku/deploy-via-git:
-                  force: true
+
                 
 workflows:
     build_test_deploy:
         jobs:
             - build_and_test
-            - deploy:
-                  requires:
-                      - build_and_test
-                  filters:
-                      branches:
-                          only: main
