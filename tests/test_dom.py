@@ -1,8 +1,6 @@
 import dash
 from dash import html
 
-from selenium import webdriver
-
 from ..app import app
 
 def test_001_app_heading_text(dash_duo):
