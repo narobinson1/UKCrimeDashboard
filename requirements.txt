@@ -29,7 +29,7 @@ nest-asyncio==1.5.7
 numpy==1.24.4
 outcome==1.2.0
 packaging==23.1
-pandas==2.1.0
+pandas==2.0.3
 percy==2.0.2
 percy-selenium==1.1.0
 plotly==5.16.1
