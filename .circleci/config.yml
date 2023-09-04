@@ -28,7 +28,7 @@ jobs:
 
                 
 workflows:
-    build_test:
+    build_test_deploy:
         jobs:
             - build_and_test
             - deploy:
