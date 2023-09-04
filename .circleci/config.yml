@@ -10,29 +10,29 @@ jobs:
         steps:
             - checkout
             - python/install-packages
-                pkg-manager: pip
+                  pkg-manager: pip
             - run:
-                name: Run tests
-                python -m pytest
+                  name: Run tests
+                  python -m pytest
             - persist_to_workspace:
-                root: ~/project
-                paths:
-                    - .
+                  root: ~/project
+                  paths:
+                      - .
     deploy:
         executor: heroku/default
         steps:
             - attach_workspace:
-                at: ~/project
+                  at: ~/project
             - heroku/deploy-via-git:
-                force: true
+                  force: true
                 
 workflows:
     build_test_deploy:
         jobs:
             - build_and_test
             - deploy:
-                requires:
-                    - build_and_test
-                filters:
-                    branches:
-                        only: main
+                  requires:
+                      - build_and_test
+                  filters:
+                      branches:
+                          only: main
