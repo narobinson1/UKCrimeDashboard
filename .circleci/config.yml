@@ -9,7 +9,7 @@ jobs:
         executor: python/default
         steps:
             - checkout
-            - python/install-packages
+            - python/install-packages:
                   pkg-manager: pip
             - run:
                   name: Run tests
