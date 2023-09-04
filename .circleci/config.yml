@@ -5,25 +5,23 @@ orbs:
     heroku: circleci/heroku@2.0.0
     
 jobs:
-    build:
+    build_and_test:
         executor: python/default
         steps:
             - checkout
             - python/install-packages:
                   pkg-manager: pip
-
-    test:
-        executor: python/default
-        steps:
             - run:
                   name: Run tests
                   command: python -m pytest
+            - persist_to_workspace:
+                  root: ~/project
+                  paths:
+                      - .
 
+                
 workflows:
-    build_test:
+    build_test_deploy:
         jobs:
-            - build
-            - test:
-                  requires:
-                      - build
+            - build_and_test
 
