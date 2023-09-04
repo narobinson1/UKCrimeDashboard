@@ -11,9 +11,6 @@ jobs:
             - checkout
             - python/install-packages:
                   pkg-manager: pip
-            - run:
-                  name: Run tests
-                  command: python -m pytest
             - persist_to_workspace:
                   root: ~/project
                   paths:
@@ -21,15 +18,18 @@ jobs:
     test:
         executor: python/default
         steps:
+            - attach_workspace:
+                  at: ~/project
             - run:
                 name: Run tests
                 command: python -m pytest
 
                 
 workflows:
-    build_test:
+    build_test_deploy:
         jobs:
             - build
             - test:
                   requires:
                       - build
+
