@@ -27,7 +27,7 @@ jobs:
                 name: Check install
             - run:
                   name: Run tests
-                  command: python -m pytest
+                  command: python -m pytest --headless
             - persist_to_workspace:
                   root: ~/project
                   paths:
