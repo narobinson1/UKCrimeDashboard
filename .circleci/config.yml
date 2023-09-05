@@ -9,6 +9,7 @@ parameters:
     chrome-version:
         default: 116.0.5845.96
         type: string
+        
 jobs:
     build_and_test:
         executor: python/default
@@ -16,7 +17,8 @@ jobs:
             - checkout
             - python/install-packages:
                   pkg-manager: pip
-            - browser-tools/install-chrome
+            - browser-tools/install-browser-tools:
+                  chrome-version: 116.0.5845.96
             - browser-tools/install-chromedriver
             - run:
                 command: |
