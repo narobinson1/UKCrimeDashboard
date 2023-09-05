@@ -9,7 +9,8 @@ jobs:
     build_and_test:
         executor: python/default
         parameters:
-            chrome-version: 116.0.5845.96
+            chrome-version:
+                - default: 116.0.5845.96
         steps:
             - checkout
             - python/install-packages:
