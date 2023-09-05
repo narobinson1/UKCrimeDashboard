@@ -8,6 +8,7 @@ orbs:
 parameters:
     chrome-version:
         default: 116.0.5845.96
+        type: string
 jobs:
     build_and_test:
         executor: python/default
