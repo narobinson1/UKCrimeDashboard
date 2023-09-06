@@ -1,21 +1,16 @@
 # Import packages
 from dash import Dash, DiskcacheManager, CeleryManager, html, dcc, callback, Output, Input, State, ctx
 from dash.exceptions import PreventUpdate
-
 import pandas as pd
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 import json
 import os
-
 from datetime import date
-
 import dash_bootstrap_components as dbc
-
 import requests
 import functools
-
 import mysql.connector
 
 # Initialize the app - incorporate a Dash Bootstrap theme
@@ -24,15 +19,8 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 COLORS = {
-    "top-bar-background": "#172952",
-    "top-bar-color": "#028acf",
     "content-background": "#180373",
     "general": "#2fa4e7"
-}
-
-TOPBAR_STYLE = {
-    "background-color": COLORS['top-bar-background'],
-    "color": COLORS['top-bar-color'],
 }
 
 CONTENT_STYLE = {
@@ -51,10 +39,8 @@ url_bar_and_content_div = html.Div([
 def date_range(start_year, start_month, end_year, end_month):
     sy = int(start_year)
     ey = int(end_year)
-    
     sm = int(start_month.lstrip('0'))
     em = int(end_month.lstrip('0'))
-
     r = []
     for y in range(sy, ey+1):
         s = 1
@@ -65,7 +51,6 @@ def date_range(start_year, start_month, end_year, end_month):
         if y == ey:
             s = 1
             e = em + 1
-            
         y = str(y)
         for m in range(s, e):
             l = []
@@ -75,7 +60,6 @@ def date_range(start_year, start_month, end_year, end_month):
                 l.append("0")
             l.append(str(m))
             r.append(''.join(l))
-            
     return r
 
 d = date_range('2020', '1', '2023', '12')
@@ -97,26 +81,19 @@ def get_count_graph(dropdown_input):
     f_ = []
     la_ = []
     ln_ = []
-    
     for location in dropdown_input:
         df = df_g[df_g['city'] == location]
         lat = float(df.lat)
         lng = float(df.lng)
-        
         p = int(df.population)
         data = fetch_data(lat, lng)
-
         t = len(data)
-
         f = t/p
-        
         l_.append(location)
         t_.append(t)
         f_.append(float(str(f*100)[:5]))
-                
     d = {'location': l_, 'total': t_, 'fractional': f_}
     df = pd.DataFrame(d)
-    
     return df
     
 
@@ -126,32 +103,24 @@ def get_category(location):
     df = df_g[df_g['city'] == location]
     lat = float(df.lat)
     lng = float(df.lng)
-
     p = int(df.population)
-
-
     data = fetch_data(lat, lng)
     t = len(data)
-    
     c = []
     cc = []
     if t != 0:
         df = pd.DataFrame(data)
         df = df['category'].value_counts()
         l = list(df)
-        
         for x in df.index:
             c.append(' '.join(x.split('-')).capitalize())
-            
         for x in l:
             cc.append(float(str((x/sum(l))*100)[:3]))
-        
     d = {'category':c,'ratio':cc}
-
     df = pd.DataFrame(d)
     return df
 
-get_category('London')
+
     
 # Get statistics from db
 def get_count_map(dropdown_input):
@@ -160,28 +129,21 @@ def get_count_map(dropdown_input):
     f_ = []
     la_ = []
     ln_ = []
-    
     for location in dropdown_input:
         df = df_g[df_g['city'] == location]
         lat = float(df.lat)
         lng = float(df.lng)
-        
         p = int(df.population)
         data = fetch_data(lat, lng)
-
         t = len(data)
-
         f = t/p
-        
         l_.append(location)
         t_.append(t)
         f_.append(float(str(f*100)[:5]))
         la_.append(lat)
         ln_.append(lng)
-                
     d = {'location':l_, 'total':t_, 'fractional':f_, 'lat':la_, 'lng':ln_}
     df = pd.DataFrame(d)
-
     return df
 
 dashboard_layout = html.Div(
@@ -194,9 +156,7 @@ dashboard_layout = html.Div(
                             children=[
                                 html.A(
                                     children=[
-                                        
                                         html.Img(src='assets/github.png', id='github-logo', height=70, style={'display':'inline', 'float':'right', 'padding-bottom':'16px'})
-#
                                     ],
                                     href='https://github.com/narobinson1',
                                     target='_blank'
@@ -215,21 +175,16 @@ dashboard_layout = html.Div(
                                         html.P('''This dashboard presents police data offered through the openly-available United Kingdom Government Police Application Programming Interface
                                         in JSON format. The data is presented as clearly as possible through interactive graphs and a central interactive map. Functionalities available include total and fractional crime count among a list of selected locations, and the ratio of specific crime categories for individual locations. The main value this dashboard offers is the possibility to shed light on the reported intensity and frequency of crimes amongst locations in the UK, through the observation of Police data.''', style={'color':COLORS['general'], 'font-weight':'100', 'background-color':COLORS['content-background'], 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border':'10px solid #0e0340'}, className='about-text'),
                                         html.Div(style={'color':COLORS['general'], 'font-weight':'100', 'background-color':'black', 'margin-left':'-32px', 'padding':'20px','margin-top':'36px', 'border-bottom':'1px solid', 'height':'90vh', 'width':'100vw'}, className='mist')
-                                        
                                     ],
                                     style={'padding-bottom':'0rem'}
                                 ),
                             ],
-                            
                         ),
                     ],
                     style={"padding":"2rem 2rem 2rem 2rem", "background-color":COLORS['content-background']}
                 ),
-                
             ],
-
         ),
-        
         html.Div(
             children=[
                 html.Div(
@@ -247,7 +202,6 @@ dashboard_layout = html.Div(
                         ),
                         html.Div(
                             children=[
-                                #start children
                                 html.Div(
                                     children=[
                                         html.Div(
@@ -302,7 +256,6 @@ dashboard_layout = html.Div(
                                                         html.Div(
                                                             children=[
                                                                 html.P('UNTIL')
-                                                                #html.Img(src='assets/arrow.png', height=30, style={'display':'inline', 'position':'relative', 'bottom':'54px'})
                                                             ],
                                                             style={'display':'inline-block', 'position':'relative', 'left':'55px', 'bottom':'38px'}
                                                         ),
@@ -325,8 +278,6 @@ dashboard_layout = html.Div(
                                                             ],
                                                             style={'display':'inline-block', 'padding':'0px', 'float':'right'}
                                                         ),
-                                                        
-                                                        
                                                     ],
                                                     style={'padding':'0px 0px 0px 0px'}
                                                 ),
@@ -336,8 +287,6 @@ dashboard_layout = html.Div(
                                             ],
                                             style={'margin-bottom':'-1rem'}
                                         ),
-                                        
-                                        
                                     ],
                                     style={'color':COLORS['general'], 'padding':'20px', 'margin-bottom':'16px', 'background-color':'#180373', 'border-radius':'10px'}
                                 ),
@@ -351,9 +300,7 @@ dashboard_layout = html.Div(
                                         
                                     ],
                                     style={'font-weight':'100', 'padding':'20px 20px 1px 20px', 'background-color':'#180373', 'border-radius':'10px'}
-                                    
                                 )
-                                #end children
                             ],
                             style={'width': '30%', 'display':'inline-block', 'height':'70.1vh', 'padding':'0px'}
                         ),
@@ -361,7 +308,6 @@ dashboard_layout = html.Div(
                             children=[
                                 html.Div(
                                         children=[
-                                            #start children
                                             html.Div(
                                                 children=[
                                                     dcc.Loading(
@@ -379,11 +325,8 @@ dashboard_layout = html.Div(
                                                         type='cube'
                                                     )
                                                 ],
-                                                # Parent div map loading style
                                                 style={'background-color':'#180373'}
                                             ),
-
-                                
                                     html.Div(
                                         children=[
                                             html.Div(
@@ -417,7 +360,6 @@ dashboard_layout = html.Div(
                                                 ],
                                                 style={'margin-top':'1rem', 'padding':'0px 10px 0px 0px', 'display':'inline-block', 'background-color':'#180373'}
                                             ),
-                                                    
                                             html.Div(
                                                 children=[
                                                     html.Div(
@@ -451,35 +393,21 @@ dashboard_layout = html.Div(
                                                 ],
                                                 style={'margin-top': '1rem', 'padding':'0px 0px 0px 0px', 'display':'inline-block', 'background-color':'#180373', 'float':'right'}
                                             )
-                                                    
                                         ],
-                                    
                                     ),
-                                            #end children
                                         ]
                                 )
                             ],
                             style={'width':'70%', 'display':'inline-block', 'background-color':'#0e0340', 'float':'right', 'padding': '0px 0px 0px 18px', 'height':'68vh'}
-
                         ),
                     ],
                     style={'padding':'20px'}
-                ), # parent div
-                
-                
+                ),
                 html.Div([dcc.Store(id='memory-output', storage_type='session', data=pd.read_csv("gb_latlon.csv", dtype=object).to_json(date_format='iso', orient='split'))])
             ],
             style=CONTENT_STYLE
         ),
     ], style={"fluid":True, "background-color": "#172952"})
-
-
-app.layout = url_bar_and_content_div
-
-app.validation_layout = html.Div([
-    dashboard_layout,
-    url_bar_and_content_div,
-])
 
 
 
@@ -523,7 +451,7 @@ def update_graph_1(dropdown_input, stat_type):
         
     df = get_count_graph(dropdown_input)
     df.sort_values(axis=0, by=stat, ascending=True, inplace=True)
-    
+
     figure = px.bar(
                 df,
                 x=stat,
@@ -548,12 +476,9 @@ def update_graph_1(dropdown_input, stat_type):
     figure.layout.yaxis.gridcolor=COLORS['content-background']
     figure.layout.xaxis.tickangle=90
     
-    
-        
     figure.update_layout(
                 margin={'b':10,'r':10,'l':10,'t':10})
     
-
     md = '''
             > Graph 1: Showing statistic '{}'
         '''.format(stat)
@@ -575,8 +500,6 @@ def update_category(click_data_map, location):
         location = click_data_map['points'][0]['hovertext']
         update_store = location
         
-    
-
     df = get_category(location)
     df.sort_values(axis=0, by='ratio', ascending=False, inplace=True)
     
@@ -607,7 +530,7 @@ def update_category(click_data_map, location):
                 margin={'b':10,'r':10,'l':10,'t':10},
                 plot_bgcolor=COLORS['content-background'],
                 paper_bgcolor=COLORS['content-background'],
-                font={'color': COLORS['top-bar-color'], 'size': 10},
+                font={'color': COLORS['general'], 'size': 10},
                 showlegend=False)
 
     md = '''
@@ -638,9 +561,7 @@ def update_dropdown(json_data):
 )
 def update_map(dropdown_input, stat_type):
     df = get_count_map(dropdown_input)
-
     scale = px.colors.sequential.Blues[2:]
-    
     if stat_type == 'Total':
         stat = 'total'
     if stat_type == 'Fractional':
@@ -670,6 +591,14 @@ def update_map(dropdown_input, stat_type):
     )
                 
     return figure
+
+
+app.layout = url_bar_and_content_div
+
+app.validation_layout = html.Div([
+    dashboard_layout,
+    url_bar_and_content_div,
+])
 
     
 if __name__ == '__main__':
