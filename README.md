@@ -1,8 +1,11 @@
-# UK Police Application Programming Interface Dashboard
+# UK Police API Dashboard
 
-To run this application:
+> Access application: https://uk-crime-dashboard-cca09beb55dc.herokuapp.com/
 
-1. Download the repo
-2. Install dependencies in requirements.txt
-3. Run app.py whilst in the working directory of the downloaded repo (e.g. 'python3 app.py')
-4. Copy and paste url into browser
+- Data queried from UK GOV Police JSON endpoint
+- Dash application
+- Tested using pytest and selenium
+- Deployed using Heroku
+- CI/CD using CircleCI
+
+
