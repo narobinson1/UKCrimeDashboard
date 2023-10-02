@@ -428,7 +428,7 @@ dashboard_layout = html.Div(
                                     className='data-provider-statement',
                                     id='data-provider-statement-id'
                                 ),
-                                html.Div(html.Div([html.P('Designed by Nicolas Robinson    Email: nicolas.alexander.robinson2@gmail.com   '), html.P('Designed by Nicolas Robinson    Email: nicolas.alexander.robinson2@gmail.com    ')], className='marquee'), className='wrapper', id='text-marquee-id')
+                                html.Div(html.Div([html.P('Designed by Nicolas Robinson    Email: nicolas.alexander.robinson@gmail.com   '), html.P('Designed by Nicolas Robinson    Email: nicolas.alexander.robinson@gmail.com    ')], className='marquee'), className='wrapper', id='text-marquee-id')
                             ],
                             style={'width': '30%', 'display':'inline-block', 'height':'70.1vh', 'padding':'0px'},
                             id='left-id'
