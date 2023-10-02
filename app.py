@@ -1,4 +1,7 @@
 # Import packages
+
+from __future__ import annotations
+
 from dash import Dash, DiskcacheManager, CeleryManager, html, dcc, callback, Output, Input, State, ctx
 from dash.exceptions import PreventUpdate
 import pandas as pd
