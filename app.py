@@ -544,7 +544,7 @@ dashboard_layout = html.Div(
             ],
             style=CONTENT_STYLE
         ),
-    ], style={"fluid":True, "background-color": "#172952"})
+    ], style={"fluid":True, "background-color": "#172952"}, id='app-id')
 
 
 
