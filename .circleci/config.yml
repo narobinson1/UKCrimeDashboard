@@ -10,10 +10,6 @@ jobs:
         executor: python/default
         steps:
             - checkout
-            - python/install-packages:
-                  pkg-manager: pip
-            - run:
-                command: python -m pip install --upgrade pip
             - browser-tools/install-browser-tools:
                   chrome-version: 116.0.5845.96
             - browser-tools/install-chromedriver
